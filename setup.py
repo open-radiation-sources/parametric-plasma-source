@@ -16,7 +16,7 @@ setuptools.setup(
     scripts=['parametric_plasma_source/'], #puts files in /usr/local/bin
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
 )
