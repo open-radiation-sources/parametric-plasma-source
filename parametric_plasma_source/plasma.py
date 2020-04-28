@@ -1,36 +1,8 @@
-"""
-This file is part of PARAMAK which is a design tool capable
-of creating 3D CAD models compatible with automated neutronics
-analysis.
 
-PARAMAK is released under GNU General Public License v3.0.
-Go to https://github.com/Shimwell/paramak/blob/master/LICENSE
-for full license details.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Copyright (C) 2019  UKAEA
-
-THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
-APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
-HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
-OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
-IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
-ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
-"""
-import math
 import os
 from pathlib import Path
 import tempfile
 import shutil
-
-import numpy as np
-import scipy
 
 
 class Plasma():
@@ -294,10 +266,10 @@ class Plasma():
             raise ValueError('directory must be set to create .so file')
 
         temp_folder = Path(tempfile.mkdtemp())
-        print(temp_folder)
+
         Path(output_filename).parent.mkdir(parents=True, exist_ok=True)
 
-        editted_plasma_make_file = self.plasma_make_file.replace('$openmc$', self.openmc_install_directory)
+        editted_plasma_make_file = self.plasma_make_file.replace('OPENMC_DIR = /opt/openmc', 'OPENMC_DIR = '+self.openmc_install_directory)
         with open(temp_folder/'Makefile', "w") as text_file:
             text_file.write(editted_plasma_make_file)
 
@@ -308,22 +280,22 @@ class Plasma():
             text_file.write(self.plasma_source_hpp_file)
 
         plasma_varibles = [
-            ('$ion_density_pedistal$',str(self.ion_density_pedistal)),
-            ('$ion_density_seperatrix$',str(self.ion_density_seperatrix)),
-            ('$ion_density_origin$',str(self.ion_density_origin)),
-            ('$ion_temperature_pedistal$',str(self.ion_temperature_pedistal)),
-            ('$ion_temperature_seperatrix$',str(self.ion_temperature_seperatrix)),
-            ('$ion_temperature_origin$',str(self.ion_temperature_origin)),
-            ('$pedistal_radius$',str(self.pedistal_radius)),
-            ('$ion_density_peaking_factor$',str(self.ion_density_peaking_factor)),
-            ('$ion_temperature_peaking_factor$',str(self.ion_temperature_peaking_factor)),
-            ('$minor_radius$',str(self.minor_radius / 100.)),
-            ('$major_radius$',str(self.major_radius / 100.)),
-            ('$elongation$',str(self.elongation)),
-            ('$triangularity$',str(self.triangularity)),
-            ('$shafranov_shift$',str(self.shafranov_shift / 100.)),
-            ('$number_of_bins$',str(self.number_of_bins)),
-            ('$plasma_type$',str(self.plasma_type))
+            ('const double ion_density_pedistal = 1.09e+20', 'const double ion_density_pedistal = ' + str(self.ion_density_pedistal)),
+            ('const double ion_density_seperatrix = 3e+19', 'const double ion_density_seperatrix = ' + str(self.ion_density_seperatrix)),
+            ('const double ion_density_origin = 1.09e+20', 'const double ion_density_origin = ' + str(self.ion_density_origin)),
+            ('const double ion_temperature_pedistal = 6.09', 'const double ion_temperature_pedistal = ' + str(self.ion_temperature_pedistal)),
+            ('const double ion_temperature_seperatrix = 0.1','const double ion_temperature_seperatrix = ' + str(self.ion_temperature_seperatrix)),
+            ('const double ion_temperature_origin = 45.9', 'const double ion_temperature_origin = ' + str(self.ion_temperature_origin)),
+            ('const double pedistal_radius = 0.8', 'const double pedistal_radius = ' + str(self.pedistal_radius)),
+            ('const double ion_density_peaking_factor = 1', 'const double ion_density_peaking_factor = ' + str(self.ion_density_peaking_factor)),
+            ('const double ion_temperature_peaking_factor = 8.06', 'const double ion_temperature_peaking_factor = ' + str(self.ion_temperature_peaking_factor)),
+            ('const double minor_radius = 1.56', 'const double minor_radius = ' + str(self.minor_radius / 100.)),
+            ('const double major_radius = 2.5', 'const double major_radius = ' + str(self.major_radius / 100.)),
+            ('const double elongation = 2.0', 'const double elongation = ' + str(self.elongation)),
+            ('const double triangularity = 0.55', 'const double triangularity = ' + str(self.triangularity)),
+            ('const double shafranov_shift = 0.0', 'const double shafranov_shift = ' + str(self.shafranov_shift / 100.)),
+            ('const int number_of_bins  = 100', 'const int number_of_bins = ' + str(self.number_of_bins)),
+            ('const int plasma_type = 1', 'const int plasma_type = 1' + str(self.plasma_type))
         ]
 
         editted_source_sampling_cpp_file = self.source_sampling_cpp_file
@@ -342,8 +314,6 @@ class Plasma():
 
         os.system('make clean')
         os.system('make')
-
-
 
         os.chdir(cwd)
         shutil.move(temp_folder/'source_sampling.so', output_filename)
