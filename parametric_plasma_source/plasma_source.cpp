@@ -159,8 +159,7 @@ void PlasmaSource::setup_plasma_source()
 {
   double ion_d; // ion density
   double ion_t; // ion temp
-  double sig_dt; // dt xs
-
+  
   std::vector<double> src_strength; // the source strength, n/m3
   double r;
 
