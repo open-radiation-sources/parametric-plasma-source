@@ -14,11 +14,14 @@ The parametric plasma source can be imported an used in Python 3 in the followin
 
 ```
 from parametric_plasma_source import Plasma
-my_plasma = Plasma(major_radius=6, minor_radius=1.5)
+my_plasma = Plasma(major_radius=6,
+                   minor_radius=1.5,
+                   elongation = 2.0
+                   triangularity = 0.55)
 my_plasma.export_plasma_source('custom_openmc_plasma_source.so')
 ```
 
-In the above example the major_radius and minor radius are changed from the default.
+In the above example the major_radius, minor_radius, elongation and triangularity while the other varibles are kept as the default values.
 
 There are a number of additional arguments that can be passed to the Plasma class on construction. Units are in SI (e.g. meters not cm)
 
