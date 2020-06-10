@@ -813,8 +813,6 @@ class Plasma():
 
         temp_folder = Path(tempfile.mkdtemp())
 
-        print('temp_folder', temp_folder)
-
         Path(output_filename).parent.mkdir(parents=True, exist_ok=True)
 
         editted_plasma_make_file = self.plasma_make_file.replace('OPENMC_DIR = /opt/openmc', 'OPENMC_DIR = '+self.openmc_install_directory)
