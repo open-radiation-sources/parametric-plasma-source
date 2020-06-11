@@ -759,10 +759,7 @@ class Plasma():
 
     @minor_radius.setter
     def minor_radius(self, minor_radius):
-        if minor_radius > 2000 or minor_radius < 1:
-            raise ValueError('minor_radius is out of range')
-        else:
-            self._minor_radius = minor_radius
+        self._minor_radius = minor_radius
 
     @property
     def major_radius(self):
