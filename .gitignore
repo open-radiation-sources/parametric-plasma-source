@@ -40,3 +40,7 @@ dist/
 __pycache__/
 *.py[cod]
 
+source_generator
+
+# Output files
+*.h5
