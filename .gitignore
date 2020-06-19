@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+source_generator
+
+# Output files
+*.h5
