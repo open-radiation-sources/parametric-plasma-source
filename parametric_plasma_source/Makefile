@@ -12,7 +12,7 @@ endif
 
 default: all 
 
-ALL = source_sampling
+ALL = source_sampling source_generator
 # add your fortran depencies here
 FC_DEPS =
 # add your c dependencies here
@@ -34,9 +34,13 @@ LINK_FLAGS = $(OPT_LEVEL) -Wall -Wl,-soname,source_sampling.so
 # setting shared is important
 LINK_FLAGS += -L$(OPENMC_LIB_DIR) -lopenmc -lgfortran -fPIC -shared
 OPENMC_INCLUDES = -I$(OPENMC_INC_DIR) -I$(OPENMC_DIR)/vendor/pugixml
+HDF5_INCLUDES = -I/usr/include/hdf5/serial
 
 all: $(ALL) 
 
+source_generator: source_generator.cpp
+	$(CXX) source_generator.cpp $(OPENMC_INCLUDES) $(HDF5_INCLUDES) $(OPT_LEVEL) \
+	-L$(OPENMC_LIB_DIR) -lopenmc -lstdc++fs -o source_generator
 source_sampling: $(DEPS)
 	$(CXX) source_sampling.cpp $(DEPS) $(OPENMC_INCLUDES) $(LINK_FLAGS) -o $@.so 
 # make any fortran objects
@@ -49,4 +53,4 @@ source_sampling: $(DEPS)
 %.o : %.cpp
 	$(CXX) -c $(FFLAGS) $*.cpp -o $@
 clean: 
-	rm -rf *.o *.mod
+	rm -rf *.o *.mod *.so source_generator
