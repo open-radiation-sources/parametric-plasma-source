@@ -249,7 +249,45 @@ class Plasma():
         else:
             self._ion_density_pedistal = ion_density_pedistal
 
+    def replace_variable_value(
+        self, input_strings, variable_name, new_value, is_cpp=True
+    ):
+        """Replaces the value assigned to a variable with the provided value
 
+        param: input_strings: The list of strings to search for the variable.
+        type input_strings: List[str]
+        
+        param: variable_name: The name of the variable to search for.
+        type variable_name: str
+        
+        param: new_value: The value to set the variable to.
+        type new_value: Union[str, float, int]
+
+        param is_cpp: Whether the variable is a C++ variable.
+                      Optional, by default True.
+        type is_cpp: bool
+
+        raises ValueError: variable_name was not found in input_strings.
+        """
+        if is_cpp:
+            strs_to_find = ("const", variable_name, "=", ";")
+        else:
+            strs_to_find = (variable_name, "=")
+        for idx, string in enumerate(input_strings):
+            if all(str_to_find in string for str_to_find in strs_to_find):
+                equals_idx = string.find("=")
+                if equals_idx >= 0:
+                    if is_cpp:
+                        new_value = f"{new_value};"
+                    input_strings[idx] = string.replace(
+                        input_strings[idx][equals_idx:], f" = {new_value}"
+                    )
+                    break
+        else:
+            file_content = "\n".join(input_strings)
+            raise ValueError(
+                f"{variable_name} string not found in {file_content}"
+            )
 
     def export_plasma_source(self, output_filename):
         """Writes and compiles custom plasma source for the reactor
@@ -267,9 +305,13 @@ class Plasma():
 
         Path(output_filename).parent.mkdir(parents=True, exist_ok=True)
 
-        editted_plasma_make_file = self.plasma_make_file.replace('OPENMC_DIR = /opt/openmc', 'OPENMC_DIR = '+self.openmc_install_directory)
+        plasma_make_file_lines = self.plasma_make_file.split("\n")
+        self.replace_variable_value(
+            plasma_make_file_lines, "OPENMC_DIR", self.openmc_install_directory, False
+        )
+
         with open(temp_folder/'Makefile', "w") as text_file:
-            text_file.write(editted_plasma_make_file)
+            text_file.write("\n".join(plasma_make_file_lines))
 
         with open(temp_folder/'plasma_source.cpp', "w") as text_file:
             text_file.write(self.plasma_source_cpp_file)
@@ -277,35 +319,33 @@ class Plasma():
         with open(temp_folder/'plasma_source.hpp', "w") as text_file:
             text_file.write(self.plasma_source_hpp_file)
 
-        plasma_varibles = [
-            ('const double ion_density_pedistal = 1.09e+20', 'const double ion_density_pedistal = ' + str(self.ion_density_pedistal)),
-            ('const double ion_density_seperatrix = 3e+19', 'const double ion_density_seperatrix = ' + str(self.ion_density_seperatrix)),
-            ('const double ion_density_origin = 1.09e+20', 'const double ion_density_origin = ' + str(self.ion_density_origin)),
-            ('const double ion_temperature_pedistal = 6.09', 'const double ion_temperature_pedistal = ' + str(self.ion_temperature_pedistal)),
-            ('const double ion_temperature_seperatrix = 0.1','const double ion_temperature_seperatrix = ' + str(self.ion_temperature_seperatrix)),
-            ('const double ion_temperature_origin = 45.9', 'const double ion_temperature_origin = ' + str(self.ion_temperature_origin)),
-            ('const double pedistal_radius = 0.8', 'const double pedistal_radius = ' + str(self.pedistal_radius)),
-            ('const double ion_density_peaking_factor = 1', 'const double ion_density_peaking_factor = ' + str(self.ion_density_peaking_factor)),
-            ('const double ion_temperature_peaking_factor = 8.06', 'const double ion_temperature_peaking_factor = ' + str(self.ion_temperature_peaking_factor)),
-            ('const double minor_radius = 1.56', 'const double minor_radius = ' + str(self.minor_radius / 100.)),
-            ('const double major_radius = 2.5', 'const double major_radius = ' + str(self.major_radius / 100.)),
-            ('const double elongation = 2.0', 'const double elongation = ' + str(self.elongation)),
-            ('const double triangularity = 0.55', 'const double triangularity = ' + str(self.triangularity)),
-            ('const double shafranov_shift = 0.0', 'const double shafranov_shift = ' + str(self.shafranov_shift / 100.)),
-            ('const int number_of_bins  = 100', 'const int number_of_bins = ' + str(self.number_of_bins)),
-            ('const int plasma_type = 1', 'const int plasma_type = ' + str(self.plasma_type))
+        plasma_variables = {
+            "ion_density_pedistal": self.ion_density_pedistal,
+            "ion_density_seperatrix": self.ion_density_seperatrix,
+            "ion_density_origin": self.ion_density_origin,
+            "ion_temperature_pedistal": self.ion_temperature_pedistal,
+            "ion_temperature_seperatrix": self.ion_temperature_seperatrix,
+            "ion_temperature_origin": self.ion_temperature_origin,
+            "pedistal_radius": self.pedistal_radius,
+            "ion_density_peaking_factor": self.ion_density_peaking_factor,
+            "ion_temperature_peaking_factor": self.ion_temperature_peaking_factor,
+            "minor_radius": self.minor_radius,
+            "major_radius": self.major_radius,
+            "elongation": self.elongation,
+            "triangularity": self.triangularity,
+            "shafranov_shift": self.shafranov_shift,
+            "number_of_bins": self.number_of_bins,
+            "plasma_type": self.plasma_type,
+        }
+
+        source_sampling_cpp_lines = self.source_sampling_cpp_file.split("\n")
+        [
+            self.replace_variable_value(source_sampling_cpp_lines, *variable)
+            for variable in plasma_variables.items()
         ]
 
-        editted_source_sampling_cpp_file = self.source_sampling_cpp_file
-        for entry in plasma_varibles:
-            if entry[0] in self.source_sampling_cpp_file:
-                editted_source_sampling_cpp_file = editted_source_sampling_cpp_file.replace(entry[0], entry[1])
-            else:
-                raise ValueError(entry[0],' string not found in ', self.source_sampling_cpp_file)
-
-
         with open(temp_folder/'source_sampling.cpp', "w") as text_file:
-            text_file.write(editted_source_sampling_cpp_file)
+            text_file.write("\n".join(source_sampling_cpp_lines))
 
         cwd = os.getcwd()
         os.chdir(Path(temp_folder))
@@ -319,3 +359,8 @@ class Plasma():
         shutil.rmtree(temp_folder)
 
         return output_filename
+
+
+if __name__ == "__main__":
+    p = Plasma()
+    p.export_plasma_source("source_sampling.so")
