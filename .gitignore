@@ -32,8 +32,10 @@
 *.app
 
 # Build path
-build
+build/
+dist/
+*.egg-info/
 
 # Python
-__pycache__
-*.pyc
+__pycache__/
+*.py[cod]
