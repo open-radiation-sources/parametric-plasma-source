@@ -33,3 +33,7 @@
 
 # Build path
 build
+
+# Python
+__pycache__
+*.pyc

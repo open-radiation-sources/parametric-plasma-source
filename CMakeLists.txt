@@ -35,3 +35,13 @@ set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
 target_include_directories(source_sampling PUBLIC ${OPENMC_DIR}/vendor/pugixml)
 target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
+
+# Build plasma_source Python bindings
+list(APPEND plasma_source_pybind_SOURCES
+  ${SRC_DIR}/plasma_source.cpp
+  ${SRC_DIR}/plasma_source_pybind.cpp
+)
+
+add_subdirectory(pybind11)
+
+pybind11_add_module(plasma_source ${plasma_source_pybind_SOURCES})
