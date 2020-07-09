@@ -17,11 +17,11 @@ PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_densit
 	    const double ion_density_origin, const double ion_temp_ped,
 	    const double ion_temp_sep, const double ion_temp_origin, 
 	    const double pedistal_rad, const double ion_density_peak,
-	    const double ion_temp_peak, const double minor_radius, 
-	    const double major_radius, const double elongation, 
-	    const double triangularity, const double shafranov, 
-	    const std::string plasma_type, const int plasma_id,
-	    const int number_of_bins,
+	    const double ion_temp_peak, const double ion_temp_beta,
+      const double minor_radius, const double major_radius,
+      const double elongation, const double triangularity,
+      const double shafranov, const std::string plasma_type,
+      const int plasma_id, const int number_of_bins,
       const double min_toroidal_angle,
       const double max_toroidal_angle ) {
 
@@ -35,6 +35,7 @@ PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_densit
   pedistalRadius = pedistal_rad;
   ionDensityPeaking = ion_density_peak;
   ionTemperaturePeaking = ion_temp_peak;
+  ionTemperatureBeta = ion_temp_beta;
   minorRadius = minor_radius;
   majorRadius = major_radius;
   this->elongation = elongation;
@@ -159,7 +160,6 @@ void PlasmaSource::setup_plasma_source()
 {
   double ion_d; // ion density
   double ion_t; // ion temp
-  double sig_dt; // dt xs
 
   std::vector<double> src_strength; // the source strength, n/m3
   double r;
@@ -231,7 +231,7 @@ double PlasmaSource::ion_temperature(const double sample_radius)
     if(sample_radius <= pedistalRadius) {
       ion_temp += ionTemperaturePedistal;
       double product;
-      product = 1.0-std::pow(sample_radius/pedistalRadius,2);
+      product = 1.0-std::pow(sample_radius/pedistalRadius,ionTemperatureBeta);
       product = std::pow(product,ionTemperaturePeaking);
       ion_temp += (ionTemperatureOrigin-
 		   ionTemperaturePedistal)*(product);
