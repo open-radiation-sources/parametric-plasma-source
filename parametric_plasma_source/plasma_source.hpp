@@ -17,11 +17,11 @@ PlasmaSource(const double ion_density_ped, const double ion_density_sep,
 	    const double ion_density_origin, const double ion_temp_ped,
 	    const double ion_temp_sep, const double ion_temp_origin, 
 	    const double pedistal_rad, const double ion_density_peak,
-	    const double ion_temp_peak, const double minor_radius, 
-	    const double major_radius, const double elongation, 
-	    const double triangularity, const double shafranov, 
-	    const std::string plasma_type, const int plasma_id,
-	    const int number_of_bins,
+	    const double ion_temp_peak, const double ion_temp_beta,
+      const double minor_radius, const double major_radius,
+      const double elongation, const double triangularity,
+      const double shafranov, const std::string plasma_type,
+      const int plasma_id, const int number_of_bins,
 		const double min_toroidal_angle = 0.0,
 		const double max_toridal_angle = 360.);
 
@@ -104,6 +104,7 @@ private:
   double pedistalRadius;
   double ionDensityPeaking;
   double ionTemperaturePeaking;
+  double ionTemperatureBeta;
   double minorRadius;
   double majorRadius;
   double elongation;
