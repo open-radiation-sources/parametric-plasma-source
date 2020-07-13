@@ -31,10 +31,6 @@
 *.out
 *.app
 
-
-# Compiled Python
-*.pyc
-
 # Build path
 build/
 dist/
