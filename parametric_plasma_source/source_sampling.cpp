@@ -13,11 +13,12 @@ const double ion_density_origin = 1.09e+20;
 const double ion_temperature_pedistal = 6.09;
 const double ion_temperature_seperatrix = 0.1;
 const double ion_temperature_origin = 45.9;
-const double pedistal_radius = 0.8; // pedistal major rad
 const double ion_density_peaking_factor = 1;
 const double ion_temperature_peaking_factor = 8.06; // check alpha or beta value from paper
+const double ion_temperature_beta = 6.0;
 const double minor_radius = 1.56; // metres
 const double major_radius = 2.5; // metres
+const double pedistal_radius = 0.8 * minor_radius; // pedistal minor rad in metres
 const double elongation = 2.0;
 const double triangularity = 0.55;
 const double shafranov_shift = 0.0; //metres
@@ -35,6 +36,7 @@ plasma_source::PlasmaSource source = plasma_source::PlasmaSource(ion_density_ped
        pedistal_radius,
        ion_density_peaking_factor,
        ion_temperature_peaking_factor,
+       ion_temperature_beta,
        minor_radius,
        major_radius,
        elongation,
