@@ -23,6 +23,7 @@ class Plasma():
                  pedistal_radius=0.8,
                  ion_density_peaking_factor=1,
                  ion_temperature_peaking_factor=8.06,
+                 ion_temperature_beta=6.0,
                  shafranov_shift=0.0,
                  number_of_bins=100,
                  plasma_type=1,
@@ -44,6 +45,7 @@ class Plasma():
         self.pedistal_radius = pedistal_radius  # pedistal major rad
         self.ion_density_peaking_factor = ion_density_peaking_factor
         self.ion_temperature_peaking_factor = ion_temperature_peaking_factor
+        self.ion_temperature_beta = ion_temperature_beta
         self.shafranov_shift = shafranov_shift
         self.number_of_bins = number_of_bins
         self.plasma_type = plasma_type  # 0 = L mode anything else H/A mode
@@ -108,6 +110,17 @@ class Plasma():
             raise ValueError('ion_temperature_peaking_factor is out of range')
         else:
             self._ion_temperature_peaking_factor = ion_temperature_peaking_factor
+
+    @property
+    def ion_temperature_beta(self):
+        return self._ion_temperature_beta
+
+    @ion_temperature_beta.setter
+    def ion_temperature_beta(self, ion_temperature_beta):
+        if ion_temperature_beta < 0:
+            raise ValueError('ion_temperature_beta is out of range')
+        else:
+            self._ion_temperature_beta = ion_temperature_beta
 
     @property
     def ion_density_peaking_factor(self):
@@ -329,6 +342,7 @@ class Plasma():
             "pedistal_radius": self.pedistal_radius,
             "ion_density_peaking_factor": self.ion_density_peaking_factor,
             "ion_temperature_peaking_factor": self.ion_temperature_peaking_factor,
+            "ion_temperature_beta": self.ion_temperature_beta,
             "minor_radius": self.minor_radius,
             "major_radius": self.major_radius,
             "elongation": self.elongation,
