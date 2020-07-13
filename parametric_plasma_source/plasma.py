@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import tempfile
 import shutil
-from source import source_sampling_cpp, plasma_source_cpp, plasma_source_hpp, make_file
+from .source import source_sampling_cpp, plasma_source_cpp, plasma_source_hpp, make_file
 
 
 class Plasma():
