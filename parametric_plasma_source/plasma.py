@@ -20,7 +20,7 @@ class Plasma():
                  ion_temperature_pedistal=6.09,
                  ion_temperature_seperatrix=0.1,
                  ion_temperature_origin=45.9,
-                 pedistal_radius=0.8,
+                 pedistal_radius=120,  # 0.8 * minor_radius
                  ion_density_peaking_factor=1,
                  ion_temperature_peaking_factor=8.06,
                  ion_temperature_beta=6.0,
