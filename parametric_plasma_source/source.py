@@ -19,11 +19,12 @@ const double ion_density_origin = 1.09e+20;
 const double ion_temperature_pedistal = 6.09;
 const double ion_temperature_seperatrix = 0.1;
 const double ion_temperature_origin = 45.9;
-const double pedistal_radius = 0.8; // pedistal major rad
 const double ion_density_peaking_factor = 1;
 const double ion_temperature_peaking_factor = 8.06; // check alpha or beta value from paper
+const double ion_temperature_beta = 6.0;
 const double minor_radius = 1.56; // metres
 const double major_radius = 2.5; // metres
+const double pedistal_radius = 0.8 * minor_radius; // pedistal minor rad in metres
 const double elongation = 2.0;
 const double triangularity = 0.55;
 const double shafranov_shift = 0.0; //metres
@@ -41,6 +42,7 @@ plasma_source::PlasmaSource source = plasma_source::PlasmaSource(ion_density_ped
        pedistal_radius,
        ion_density_peaking_factor,
        ion_temperature_peaking_factor,
+       ion_temperature_beta,
        minor_radius,
        major_radius,
        elongation,
@@ -114,11 +116,11 @@ PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_densit
 	    const double ion_density_origin, const double ion_temp_ped,
 	    const double ion_temp_sep, const double ion_temp_origin, 
 	    const double pedistal_rad, const double ion_density_peak,
-	    const double ion_temp_peak, const double minor_radius, 
-	    const double major_radius, const double elongation, 
-	    const double triangularity, const double shafranov, 
-	    const std::string plasma_type, const int plasma_id,
-	    const int number_of_bins,
+	    const double ion_temp_peak, const double ion_temp_beta,
+      const double minor_radius, const double major_radius,
+      const double elongation, const double triangularity,
+      const double shafranov, const std::string plasma_type,
+      const int plasma_id, const int number_of_bins,
       const double min_toroidal_angle,
       const double max_toroidal_angle ) {
 
@@ -132,6 +134,7 @@ PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_densit
   pedistalRadius = pedistal_rad;
   ionDensityPeaking = ion_density_peak;
   ionTemperaturePeaking = ion_temp_peak;
+  ionTemperatureBeta = ion_temp_beta;
   minorRadius = minor_radius;
   majorRadius = major_radius;
   this->elongation = elongation;
@@ -256,7 +259,7 @@ void PlasmaSource::setup_plasma_source()
 {
   double ion_d; // ion density
   double ion_t; // ion temp
-  
+
   std::vector<double> src_strength; // the source strength, n/m3
   double r;
 
@@ -327,7 +330,7 @@ double PlasmaSource::ion_temperature(const double sample_radius)
     if(sample_radius <= pedistalRadius) {
       ion_temp += ionTemperaturePedistal;
       double product;
-      product = 1.0-std::pow(sample_radius/pedistalRadius,2);
+      product = 1.0-std::pow(sample_radius/pedistalRadius,ionTemperatureBeta);
       product = std::pow(product,ionTemperaturePeaking);
       ion_temp += (ionTemperatureOrigin-
 		   ionTemperaturePedistal)*(product);
@@ -402,11 +405,11 @@ PlasmaSource(const double ion_density_ped, const double ion_density_sep,
 	    const double ion_density_origin, const double ion_temp_ped,
 	    const double ion_temp_sep, const double ion_temp_origin, 
 	    const double pedistal_rad, const double ion_density_peak,
-	    const double ion_temp_peak, const double minor_radius, 
-	    const double major_radius, const double elongation, 
-	    const double triangularity, const double shafranov, 
-	    const std::string plasma_type, const int plasma_id,
-	    const int number_of_bins,
+	    const double ion_temp_peak, const double ion_temp_beta,
+      const double minor_radius, const double major_radius,
+      const double elongation, const double triangularity,
+      const double shafranov, const std::string plasma_type,
+      const int plasma_id, const int number_of_bins,
 		const double min_toroidal_angle = 0.0,
 		const double max_toridal_angle = 360.);
 
@@ -489,6 +492,7 @@ private:
   double pedistalRadius;
   double ionDensityPeaking;
   double ionTemperaturePeaking;
+  double ionTemperatureBeta;
   double minorRadius;
   double majorRadius;
   double elongation;
