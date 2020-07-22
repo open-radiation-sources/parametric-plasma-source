@@ -69,7 +69,7 @@ build_python(source_dir="parametric_plasma_source")
 setup(
     name="parametric_plasma_source",
     version="0.0.6",
-    author="Jonathan Shimwell",
+    author="Andrew Davis",
     author_email="jonathan.shimwell@ukaea.uk",
     description="Parametric plasma source for fusion simulations in OpenMC",
     long_description=long_description,
