@@ -74,7 +74,7 @@ setup(
     description="Parametric plasma source for fusion simulations in OpenMC",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/shimwell/parametric_plasma_source",
+    url="https://github.com/makeclean/parametric-plasma-source/",
     packages=find_packages(),
     ext_modules=[CMakeExtention("parametric_plasma_source/plasma_source")],
     cmdclass=dict(build_ext=CMakeBuild),
