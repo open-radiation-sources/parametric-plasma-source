@@ -44,5 +44,12 @@ PYBIND11_MODULE(plasma_source, m) {
         .def("dt_xs",
              &ps::PlasmaSource::dt_xs,
              "determine the value of the dt xs cross sections at a specific ion temperature",
-             py::arg("ion_temperature"));
+             py::arg("ion_temperature"))
+        .def("to_xml", 
+             (bool (ps::PlasmaSource::*)(std::string)) &ps::PlasmaSource::to_xml,
+             "Serialise the PlasmaSource to XML",
+             py::arg("output_path"))
+        .def("to_xml",
+             (std::string (ps::PlasmaSource::*)()) &ps::PlasmaSource::to_xml,
+             "Serialise the PlasmaSource to XML");
 }

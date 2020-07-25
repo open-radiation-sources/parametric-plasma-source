@@ -282,4 +282,14 @@ void PlasmaSource::isotropic_direction(const double random1,
   return;
 }
 
+std::string PlasmaSource::to_xml() {
+  return "";
+}
+
+bool PlasmaSource::to_xml(std::string output_path) {
+  bool success = true;
+  std::string output = this->to_xml();
+  return success;
+}
+
 } // end of namespace

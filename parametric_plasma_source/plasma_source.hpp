@@ -91,6 +91,10 @@ void convert_r_to_xy(const double r, const double rn_store,
 void isotropic_direction(const double random1, const double random2,
 						double &u, double &v, double &w);
 
+std::string to_xml();
+
+bool to_xml(std::string output_path);
+
 private:
   std::vector<double> source_profile;
   std::vector<double> ion_kt;
