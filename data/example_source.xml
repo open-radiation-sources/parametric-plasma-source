@@ -18,5 +18,5 @@
   <PlasmaId>1</PlasmaId>
   <NumberOfBins>100</NumberOfBins>
   <MinimumToroidalAngle>0</MinimumToroidalAngle>
-  <MaximumToroidalAngle>6.2831853071795862</MaximumToroidalAngle>
+  <MaximumToroidalAngle>360</MaximumToroidalAngle>
 </PlasmaSource>
