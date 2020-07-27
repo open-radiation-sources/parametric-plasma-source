@@ -9,6 +9,11 @@ namespace plasma_source {
     root_node = doc.append_child(root_name);
   }
 
+  XMLHelper::XMLHelper(pugi::xml_document* doc, std::string root_name) {
+    this->doc.reset(*doc);
+    this->root_node = this->doc.root().child(root_name.c_str());
+  }
+
   void XMLHelper::set_root_element(const char* root_name) {
     root_node = doc.append_child(root_name);
   }
@@ -27,6 +32,18 @@ namespace plasma_source {
 
   void XMLHelper::add_element(const char* element_name, std::string element_value) {
     root_node.append_child(element_name).text() = element_value.c_str();
+  }
+
+  double XMLHelper::get_element_as_double(const char* element_name) {
+    return root_node.child(element_name).text().as_double();
+  }
+
+  int XMLHelper::get_element_as_int(const char* element_name) {
+    return root_node.child(element_name).text().as_int();
+  }
+
+  std::string XMLHelper::get_element_as_string(const char* element_name) {
+    return root_node.child(element_name).text().as_string();
   }
 
   struct xml_string_writer: pugi::xml_writer {

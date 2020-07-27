@@ -1,10 +1,14 @@
 #include <iostream>
 #include <array>
+#include "pugixml.hpp"
+
 namespace plasma_source {
 
 struct xs_params {
   double c[7];
 };
+
+static const std::string PLASMA_SOURCE_ROOT_NAME = "PlasmaSource";
 
 class PlasmaSource {
 public:
@@ -125,6 +129,8 @@ private:
   int plasmaId;
   double binWidth;
   int numberOfBins;
+
+  static PlasmaSource from_xml_doc(pugi::xml_document* xml_doc, std::string root_name);
 
 };
 }// end of namespace
