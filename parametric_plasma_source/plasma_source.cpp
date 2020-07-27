@@ -287,7 +287,7 @@ void PlasmaSource::isotropic_direction(const double random1,
 }
 
 std::string PlasmaSource::to_xml() {
-  XMLHelper xml_helper = XMLHelper("PlasmaSource");
+  XMLHelper xml_helper = XMLHelper(PLASMA_SOURCE_ROOT_NAME.c_str());
   xml_helper.add_element("MajorRadius", majorRadius);
   xml_helper.add_element("MinorRadius", minorRadius);
   xml_helper.add_element("Elongation", elongation);
