@@ -95,6 +95,8 @@ std::string to_xml();
 
 bool to_xml(std::string output_path);
 
+static PlasmaSource from_file(std::string input_path);
+
 private:
   std::vector<double> source_profile;
   std::vector<double> ion_kt;

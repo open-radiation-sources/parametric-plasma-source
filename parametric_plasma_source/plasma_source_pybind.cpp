@@ -51,5 +51,9 @@ PYBIND11_MODULE(plasma_source, m) {
              py::arg("output_path"))
         .def("to_xml",
              (std::string (ps::PlasmaSource::*)()) &ps::PlasmaSource::to_xml,
-             "Serialise the PlasmaSource to XML");
+             "Serialise the PlasmaSource to XML")
+        .def_static("from_file",
+                    &ps::PlasmaSource::from_file,
+                    "Deserialise the PlasmaSource from an XML file",
+                    py::arg("input_path"));
 }
