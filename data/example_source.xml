@@ -1,0 +1,22 @@
+<PlasmaSource>
+  <MinorRadius>1.5</MinorRadius>
+  <MajorRadius>4.5</MajorRadius>
+  <Elongation>2</Elongation>
+  <Triangularity>0.55</Triangularity>
+  <ShafranovShift>0</ShafranovShift>
+  <PedestalRadius>0.8</PedestalRadius>
+  <IonDensityPedestal>1.09e+20</IonDensityPedestal>
+  <IonDensitySeparatrix>3e+19</IonDensitySeparatrix>
+  <IonDensityOrigin>1.09e+20</IonDensityOrigin>
+  <IonTemperaturePedestal>6.09</IonTemperaturePedestal>
+  <IonTemperatureSeparatrix>0.1</IonTemperatureSeparatrix>
+  <IonTemperatureOrigin>45.9</IonTemperatureOrigin>
+  <IonDensityAlpha>1</IonDensityAlpha>
+  <IonTemperatureAlpha>8.06</IonTemperatureAlpha>
+  <IonTemperatureBeta>6</IonTemperatureBeta>
+  <PlasmaType>plasma</PlasmaType>
+  <PlasmaId>1</PlasmaId>
+  <NumberOfBins>100</NumberOfBins>
+  <MinimumToroidalAngle>0</MinimumToroidalAngle>
+  <MaximumToroidalAngle>6.2831853071795862</MaximumToroidalAngle>
+</PlasmaSource>
