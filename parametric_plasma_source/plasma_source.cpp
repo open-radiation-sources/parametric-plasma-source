@@ -1,9 +1,11 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cmath>
 #include "plasma_source.hpp"
 #include <stdlib.h>     
 #include "openmc/random_lcg.h"
+#include "xml_helper.hpp"
 
 #define RANDOM openmc::prn()
 
@@ -283,12 +285,42 @@ void PlasmaSource::isotropic_direction(const double random1,
 }
 
 std::string PlasmaSource::to_xml() {
-  return "";
+  XMLHelper xml_helper = XMLHelper("PlasmaSource");
+  xml_helper.add_element("MinorRadius", minorRadius);
+  xml_helper.add_element("MajorRadius", majorRadius);
+  xml_helper.add_element("Elongation", elongation);
+  xml_helper.add_element("Triangularity", triangularity);
+  xml_helper.add_element("ShafranovShift", shafranov);
+  xml_helper.add_element("PedestalRadius", pedistalRadius);
+  xml_helper.add_element("IonDensityPedestal", ionDensityPedistal);
+  xml_helper.add_element("IonDensitySeparatrix", ionDensitySeperatrix);
+  xml_helper.add_element("IonDensityOrigin", ionDensityOrigin);
+  xml_helper.add_element("IonTemperaturePedestal", ionTemperaturePedistal);
+  xml_helper.add_element("IonTemperatureSeparatrix", ionTemperatureSeperatrix);
+  xml_helper.add_element("IonTemperatureOrigin", ionTemperatureOrigin);
+  xml_helper.add_element("IonDensityAlpha", ionDensityPeaking);
+  xml_helper.add_element("IonTemperatureAlpha", ionTemperaturePeaking);
+  xml_helper.add_element("IonTemperatureBeta", ionTemperatureBeta);
+  xml_helper.add_element("PlasmaType", plasmaType);
+  xml_helper.add_element("PlasmaId", plasmaId);
+  xml_helper.add_element("NumberOfBins", numberOfBins);
+  xml_helper.add_element("MinimumToroidalAngle", minToroidalAngle);
+  xml_helper.add_element("MaximumToroidalAngle", maxToroidalAngle);
+  return xml_helper.to_string();
 }
 
 bool PlasmaSource::to_xml(std::string output_path) {
   bool success = true;
-  std::string output = this->to_xml();
+  std::string output = to_xml();
+  std::ofstream out;
+  out.open(output_path);
+  if (out.is_open()) {
+    out << output;
+    out.close();
+  }
+  else {
+    success = false;
+  }
   return success;
 }
 

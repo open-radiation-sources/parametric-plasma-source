@@ -43,6 +43,12 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/pugixml/CMakeLists.txt")
     turned off or failed. Please update submodules and try again.")
 endif()
 
+#===============================================================================
+# pugixml library
+#===============================================================================
+
+add_subdirectory(pugixml)
+
 # Build source_sampling
 list(APPEND source_sampling_SOURCES
   ${SRC_DIR}/source_sampling.cpp
@@ -61,6 +67,7 @@ target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
 
 # Build plasma_source Python bindings
 list(APPEND plasma_source_pybind_SOURCES
+  ${SRC_DIR}/xml_helper.cpp
   ${SRC_DIR}/plasma_source.cpp
   ${SRC_DIR}/plasma_source_pybind.cpp
 )
@@ -68,3 +75,6 @@ list(APPEND plasma_source_pybind_SOURCES
 add_subdirectory(pybind11)
 
 pybind11_add_module(plasma_source ${plasma_source_pybind_SOURCES})
+target_include_directories(plasma_source PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pugixml)
+link_directories(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+target_link_libraries(plasma_source PRIVATE pugixml)

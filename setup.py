@@ -33,6 +33,7 @@ class CMakeBuild(build_ext):
             extdir += os.path.sep
 
         cmake_args = ["-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + extdir,
+                      "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=" + extdir,
                       "-DPYTHON_EXECUTABLE=" + sys.executable]
 
         cfg = "Debug" if self.debug else "Release"
@@ -77,6 +78,7 @@ setup(
     url="https://github.com/makeclean/parametric-plasma-source/",
     packages=find_packages(),
     ext_modules=[CMakeExtention("parametric_plasma_source/plasma_source")],
+    package_data={"parametric_plasma_source": ["libpugixml.a"]},
     cmdclass=dict(build_ext=CMakeBuild),
     classifiers=[
         "Programming Language :: Python :: 3",
