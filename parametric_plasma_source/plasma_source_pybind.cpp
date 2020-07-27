@@ -55,5 +55,9 @@ PYBIND11_MODULE(plasma_source, m) {
         .def_static("from_file",
                     &ps::PlasmaSource::from_file,
                     "Deserialise the PlasmaSource from an XML file",
-                    py::arg("input_path"));
+                    py::arg("input_path"))
+        .def_static("from_xml",
+                    &ps::PlasmaSource::from_xml,
+                    "Deserialise the PlasmaSource from an XML string",
+                    py::arg("xml"));
 }

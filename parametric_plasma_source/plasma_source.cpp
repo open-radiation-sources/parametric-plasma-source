@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <cmath>
 #include "plasma_source.hpp"
@@ -329,6 +330,45 @@ PlasmaSource PlasmaSource::from_file(std::string input_path) {
   pugi::xml_parse_result result = doc.load_file(input_path.c_str());
   if (!result) {
     throw std::runtime_error("Error reading plasma source from file " + input_path + ". Error = " + result.description());
+  }
+
+  pugi::xml_node root_node = doc.root().child("PlasmaSource");
+
+  double major_radius = root_node.child("MajorRadius").text().as_double();
+  double minor_radius = root_node.child("MinorRadius").text().as_double();
+  double elongation = root_node.child("Elongation").text().as_double();
+  double triangularity = root_node.child("Triangularity").text().as_double();
+  double shafranov_shift = root_node.child("ShafranovShift").text().as_double();
+  double pedestal_radius = root_node.child("PedestalRadius").text().as_double();
+  double ion_density_pedestal = root_node.child("IonDensityPedestal").text().as_double();
+  double ion_density_separatrix = root_node.child("IonDensitySeparatrix").text().as_double();
+  double ion_density_origin = root_node.child("IonDensityOrigin").text().as_double();
+  double ion_temperature_pedestal = root_node.child("IonTemperaturePedestal").text().as_double();
+  double ion_temperature_separatrix = root_node.child("IonTemperatureSeparatrix").text().as_double();
+  double ion_temperature_origin = root_node.child("IonTemperatureOrigin").text().as_double();
+  double ion_density_alpha = root_node.child("IonDensityAlpha").text().as_double();
+  double ion_temperature_alpha = root_node.child("IonTemperatureAlpha").text().as_double();
+  double ion_temperature_beta = root_node.child("IonTemperatureBeta").text().as_double();
+  std::string plasma_type = root_node.child("PlasmaType").text().as_string();
+  int plasma_id = root_node.child("PlasmaId").text().as_int();
+  int number_of_bins = root_node.child("NumberOfBins").text().as_int();
+  double min_toroidal_angle = root_node.child("MinimumToroidalAngle").text().as_double();
+  double max_toroidal_angle = root_node.child("MaximumToroidalAngle").text().as_double();
+
+  PlasmaSource plasma_source = PlasmaSource(
+    ion_density_pedestal, ion_density_separatrix, ion_density_origin, ion_temperature_pedestal, ion_temperature_separatrix,
+    ion_temperature_origin, pedestal_radius, ion_density_alpha, ion_temperature_alpha, ion_temperature_beta, minor_radius,
+    major_radius, elongation, triangularity, shafranov_shift, plasma_type, plasma_id, number_of_bins, min_toroidal_angle,
+    max_toroidal_angle);
+  return plasma_source;
+}
+
+PlasmaSource PlasmaSource::from_xml(std::string xml) {
+  pugi::xml_document doc;
+  std::istringstream ss(xml);
+  pugi::xml_parse_result result = doc.load(ss);
+  if (!result) {
+    throw std::runtime_error("Error reading plasma source from string " + xml + ". Error = " + result.description());
   }
 
   pugi::xml_node root_node = doc.root().child("PlasmaSource");
