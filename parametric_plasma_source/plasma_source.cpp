@@ -306,8 +306,8 @@ std::string PlasmaSource::to_xml() {
   xml_helper.add_element("PlasmaType", plasmaType);
   xml_helper.add_element("PlasmaId", plasmaId);
   xml_helper.add_element("NumberOfBins", numberOfBins);
-  xml_helper.add_element("MinimumToroidalAngle", minToroidalAngle);
-  xml_helper.add_element("MaximumToroidalAngle", maxToroidalAngle);
+  xml_helper.add_element("MinimumToroidalAngle", minToroidalAngle / M_PI * 180.0);
+  xml_helper.add_element("MaximumToroidalAngle", maxToroidalAngle / M_PI * 180.0);
   return xml_helper.to_string();
 }
 
