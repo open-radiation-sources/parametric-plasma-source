@@ -6,8 +6,9 @@
 
 
 // Spherical tokamak SOURCE 
+// units are in SI units
 const double ion_density_pedistal = 1.09e+20; // ions per m^3
-const double ion_density_seperatrix =3e+19;
+const double ion_density_seperatrix = 3e+19;
 const double ion_density_origin = 1.09e+20;
 const double ion_temperature_pedistal = 6.09;
 const double ion_temperature_seperatrix = 0.1;
@@ -24,7 +25,6 @@ const double shafranov_shift = 0.0; //metres
 const std::string name = "parametric_plasma_source";
 const int number_of_bins  = 100;
 const int plasma_type = 1; // 1 is default; //0 = L mode anything else H/A mode
-
 
 
 plasma_source::PlasmaSource source = plasma_source::PlasmaSource(ion_density_pedistal,
@@ -58,13 +58,13 @@ extern "C" openmc::Particle::Bank sample_source(uint64_t* seed) {
     // position 
 
     std::array<double,8> randoms = {openmc::prn(seed),
-                                    openmc::prn(seed),
-                                    openmc::prn(seed),
-                                    openmc::prn(seed),
-                                    openmc::prn(seed),
-                                    openmc::prn(seed),
-                                    openmc::prn(seed),
-                                    openmc::prn(seed)};
+                            openmc::prn(seed),
+                            openmc::prn(seed),
+                            openmc::prn(seed),
+                            openmc::prn(seed),
+                            openmc::prn(seed),
+                            openmc::prn(seed),
+                            openmc::prn(seed)};
 
     double u,v,w,E;
     source.SampleSource(randoms,particle.r.x,particle.r.y,particle.r.z,

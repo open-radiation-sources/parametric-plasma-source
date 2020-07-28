@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# Build path
+build/
+dist/
+*.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+
