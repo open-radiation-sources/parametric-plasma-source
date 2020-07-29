@@ -43,3 +43,18 @@ list(APPEND plasma_source_pybind_SOURCES
 add_subdirectory(pybind11)
 
 pybind11_add_module(plasma_source ${plasma_source_pybind_SOURCES})
+
+# Build source_generator
+list(APPEND source_generator_SOURCES
+  ${SRC_DIR}/source_generator.cpp
+)
+
+add_executable(source_generator ${source_generator_SOURCES})
+
+find_package(HDF5 REQUIRED)
+
+set_target_properties(source_generator PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(source_generator PUBLIC ${OPENMC_INC_DIR})
+target_include_directories(source_generator PUBLIC ${HDF5_INCLUDE_DIRS})
+target_include_directories(source_generator PUBLIC ${OPENMC_DIR}/vendor/pugixml)
+target_link_libraries(source_generator ${OPENMC_LIB} ${HDF5_LIBRARIES} stdc++fs)
