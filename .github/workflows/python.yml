@@ -22,5 +22,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install plasma source
       run: |
+        pip install wheel
         python setup.py bdist_wheel
         python -m pip install --verbose dist/*.whl
