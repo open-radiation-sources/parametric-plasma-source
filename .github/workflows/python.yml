@@ -1,0 +1,26 @@
+name: Python package
+
+on: 
+  push:
+    branches: [ implement_ci ]
+  pull_request:
+    branches: [ implement_ci ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install plasma source
+      run: |
+        python setup.py sdist
+        python -m pip install --verbose dist/*.tar.gz
