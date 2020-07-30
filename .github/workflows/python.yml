@@ -26,6 +26,9 @@ jobs:
         pip install wheel
         python setup.py bdist_wheel
         python -m pip install --verbose dist/*.whl
+
+  publish:
+
     - name: upload wheel
       uses: actions/upload-artifact@v2
       with:
