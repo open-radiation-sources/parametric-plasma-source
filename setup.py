@@ -36,11 +36,11 @@ class CMakeBuild(build_ext):
                       "-DPYTHON_EXECUTABLE=" + sys.executable]
 
         cfg = "Debug" if self.debug else "Release"
-        build_args = ["--config", cfg]
+        build_args = ["--target", "plasma_source"]
+        build_args += ["--config", cfg]
 
         cmake_args += ["-DCMAKE_BUILD_TYPE=" + cfg]
         build_args += ["--", "-j2"]
-        build_args += ["--target", "plasma_source"]
 
         env = os.environ.copy()
         env["CXXFLAGS"] = "{} -DVERSION_INFO=\\\"{}\\\"".format(
