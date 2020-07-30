@@ -16,7 +16,7 @@ The parametric plasma source can be imported an used in Python 3 in the followin
 from parametric_plasma_source import Plasma
 my_plasma = Plasma(major_radius=6,
                    minor_radius=1.5,
-                   elongation = 2.0
+                   elongation = 2.0,
                    triangularity = 0.55)
 my_plasma.export_plasma_source('custom_openmc_plasma_source.so')
 ```
