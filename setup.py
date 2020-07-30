@@ -40,7 +40,7 @@ class CMakeBuild(build_ext):
 
         cmake_args += ["-DCMAKE_BUILD_TYPE=" + cfg]
         build_args += ["--", "-j2"]
-        build_args += ["plasma_source"]
+        build_args += ["--target", "plasma_source"]
 
         env = os.environ.copy()
         env["CXXFLAGS"] = "{} -DVERSION_INFO=\\\"{}\\\"".format(
