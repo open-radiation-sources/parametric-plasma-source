@@ -7,32 +7,25 @@ on:
     branches: [ implement_ci ]
 
 jobs:
+  build:
 
-  setup:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-
-  build:
-    needs: setup
-    steps:
     - name: Install plasma source
       run: |
         git submodule update --init --recursive
         pip install wheel
         python setup.py bdist_wheel
         python -m pip install --verbose dist/*.whl
-
-  publish:
-    needs: build
-    steps:
     - name: upload wheel
       uses: actions/upload-artifact@v2
       with:
