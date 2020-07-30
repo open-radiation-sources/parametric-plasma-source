@@ -31,7 +31,6 @@ jobs:
         python -m pip install --verbose dist/*.whl
 
   publish:
-    on: push
     needs: build
     steps:
     - name: upload wheel
