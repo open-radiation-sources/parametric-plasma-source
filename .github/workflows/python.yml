@@ -25,10 +25,10 @@ jobs:
         pip install -r requirements-develop.txt
         python setup.py bdist_wheel
         python -m pip install --verbose dist/*.whl
-    - name: run tests
+    - name: Run tests
       run: |
         pytest tests
-    - name: upload wheel
+    - name: Upload wheel artifact
       uses: actions/upload-artifact@v2
       with:
         name: dist
