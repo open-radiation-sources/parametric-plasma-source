@@ -3,9 +3,6 @@
 #include <cmath>
 #include "plasma_source.hpp"
 #include <stdlib.h>     
-#include "openmc/random_lcg.h"
-
-#define RANDOM openmc::prn()
 
 namespace plasma_source {
 
