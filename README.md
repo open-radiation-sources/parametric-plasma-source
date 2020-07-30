@@ -1,18 +1,20 @@
 # parametric-plasma-source
 
+![Python package](https://github.com/DanShort12/parametric-plasma-source/workflows/Python%20package/badge.svg)
+
 Python package, C++ source and build files for parametric plasma source for use in fusion neutron transport calculations with OpenMC.
 
 The plasma source is based on a paper by [C. Fausser et al](https://www.sciencedirect.com/science/article/pii/S0920379612000853)
 
-# Installation
+## Installation
 
 ```pip install parametric_plasma_source```
 
-# Usage
+## Usage
 
 The parametric plasma source can be imported an used in Python 3 in the following manner.
 
-```
+```[python]
 from parametric_plasma_source import Plasma
 my_plasma = Plasma(major_radius=6,
                    minor_radius=1.5,
@@ -25,7 +27,7 @@ In the above example the major_radius, minor_radius, elongation and triangularit
 
 There are a number of additional arguments that can be passed to the Plasma class on construction. Units are in SI (e.g. meters not cm)
 
-```
+```[python]
 ion_density_pedistal = 1.09e+20
 ion_density_seperatrix = 3e+19
 ion_density_origin = 1.09e+20
