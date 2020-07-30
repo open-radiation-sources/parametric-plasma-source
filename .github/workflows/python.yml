@@ -22,7 +22,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install plasma source
       run: |
-        git submodule update --init --recursive
         pip install -r requirements-develop.txt
         python setup.py bdist_wheel
         python -m pip install --verbose dist/*.whl
