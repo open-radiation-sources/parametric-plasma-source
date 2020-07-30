@@ -26,13 +26,15 @@ list(APPEND source_sampling_SOURCES
 
 add_library(source_sampling SHARED ${source_sampling_SOURCES})
 
-find_library(OPENMC_LIB openmc HINTS ${OPENMC_LIB_DIR})
+find_library(OPENMC_LIB openmc HINTS ${OPENMC_LIB_DIR} OPTIONAL)
 
-set_target_properties(source_sampling PROPERTIES PREFIX "")
-set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
-target_include_directories(source_sampling PUBLIC ${OPENMC_DIR}/vendor/pugixml)
-target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
+if (OPENMC_LIB)
+  set_target_properties(source_sampling PROPERTIES PREFIX "")
+  set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
+  target_include_directories(source_sampling PUBLIC ${OPENMC_DIR}/vendor/pugixml)
+  target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
+endif()
 
 # Build plasma_source Python bindings
 list(APPEND plasma_source_pybind_SOURCES
