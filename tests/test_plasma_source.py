@@ -38,3 +38,59 @@ class TestPlasmaSource:
         ion_density = plasma_source.ion_density(0.0)
 
         assert pytest.approx(ion_density, 1.09e20)
+
+    def test_ion_density_inside_pedestal(self, plasma_source):
+        """Test the ion density inside the pedestal."""
+        ion_density = plasma_source.ion_density(0.2)
+
+        assert pytest.approx(ion_density, 1.09e20)
+
+    def test_ion_density_outside_pedestal(self, plasma_source):
+        """Test the ion density outside the pedestal."""
+        ion_density = plasma_source.ion_density(2.4)
+
+        assert pytest.approx(ion_density, 1.00628584e20)
+
+    def test_ion_density_boundary(self, plasma_source):
+        """Test the ion density at the boundary."""
+        boundary = plasma_params["minor_radius"] / 100.0
+        ion_density = plasma_source.ion_density(boundary)
+
+        assert pytest.approx(
+            ion_density, plasma_params["ion_density_seperatrix"]
+        )
+
+    def test_ion_temperature_magnetic_origin(self, plasma_source):
+        """Test the ion temperature at the magnetic origin."""
+        ion_temperature = plasma_source.ion_temperature(0.0)
+
+        assert pytest.approx(
+            ion_temperature, plasma_params["ion_temperature_origin"]
+        )
+
+    def test_ion_temperature_inside_pedestal(self, plasma_source):
+        """Test the ion temperature inside the pedestal."""
+        ion_temperature = plasma_source.ion_temperature(0.2)
+
+        assert pytest.approx(ion_temperature, 45.89987429)
+
+    def test_ion_temperature_outside_pedestal(self, plasma_source):
+        """Test the ion temperature outside the pedestal."""
+        ion_temperature = plasma_source.ion_temperature(2.4)
+
+        assert pytest.approx(ion_temperature, 5.45525594)
+
+    def test_ion_temperature_boundary(self, plasma_source):
+        """Test the ion temperature at the boundary."""
+        boundary = plasma_params["minor_radius"] / 100.0
+        ion_temperature = plasma_source.ion_temperature(boundary)
+
+        assert pytest.approx(
+            ion_temperature, plasma_params["ion_temperature_seperatrix"]
+        )
+
+    def test_dt_cross_section(self, plasma_source):
+        """Test the dt cross section at a specific temperature."""
+        dt_cross_section = plasma_source.dt_xs(4.25e7)
+
+        assert pytest.approx(dt_cross_section, 0.0)
