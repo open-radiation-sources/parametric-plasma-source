@@ -2,9 +2,9 @@ name: Python package
 
 on: 
   push:
-    branches: [ implement_ci ]
+    branches: [ master ]
   pull_request:
-    branches: [ implement_ci ]
+    branches: [ master ]
 
 jobs:
   build_and_test:
