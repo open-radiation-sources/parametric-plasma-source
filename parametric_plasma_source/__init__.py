@@ -1,2 +1,5 @@
-from .plasma import Plasma
-from .plasma_source import PlasmaSource
+"""
+__init__ for parametric_plasma_source.
+
+Does not collect any imports as package may not be built yet.
+"""
