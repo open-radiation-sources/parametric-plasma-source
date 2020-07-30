@@ -7,13 +7,15 @@ on:
     branches: [ implement_ci ]
 
 jobs:
-  build:
 
+  setup:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
 
+  build:
+    needs: setup
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -28,7 +30,9 @@ jobs:
         python -m pip install --verbose dist/*.whl
 
   publish:
-
+    on: push
+    needs: build
+    steps:
     - name: upload wheel
       uses: actions/upload-artifact@v2
       with:
