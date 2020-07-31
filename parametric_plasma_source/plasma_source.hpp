@@ -99,7 +99,7 @@ std::string to_xml();
 
 bool to_xml(std::string output_path);
 
-static PlasmaSource from_xml(std::string xml);
+static PlasmaSource from_xml(char* xml);
 
 static PlasmaSource from_file(std::string input_path);
 

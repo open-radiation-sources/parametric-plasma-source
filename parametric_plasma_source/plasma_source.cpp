@@ -327,27 +327,29 @@ bool PlasmaSource::to_xml(std::string output_path) {
 }
 
 PlasmaSource PlasmaSource::from_xml_doc(pugi::xml_document* xml_doc, std::string root_name) {
-  XMLHelper xml_helper = XMLHelper(xml_doc, root_name);
-  double major_radius = xml_helper.get_element_as_double("MajorRadius");
-  double minor_radius = xml_helper.get_element_as_double("MinorRadius");
-  double elongation = xml_helper.get_element_as_double("Elongation");
-  double triangularity = xml_helper.get_element_as_double("Triangularity");
-  double shafranov_shift = xml_helper.get_element_as_double("ShafranovShift");
-  double pedestal_radius = xml_helper.get_element_as_double("PedestalRadius");
-  double ion_density_pedestal = xml_helper.get_element_as_double("IonDensityPedestal");
-  double ion_density_separatrix = xml_helper.get_element_as_double("IonDensitySeparatrix");
-  double ion_density_origin = xml_helper.get_element_as_double("IonDensityOrigin");
-  double ion_temperature_pedestal = xml_helper.get_element_as_double("IonTemperaturePedestal");
-  double ion_temperature_separatrix = xml_helper.get_element_as_double("IonTemperatureSeparatrix");
-  double ion_temperature_origin = xml_helper.get_element_as_double("IonTemperatureOrigin");
-  double ion_density_alpha = xml_helper.get_element_as_double("IonDensityAlpha");
-  double ion_temperature_alpha = xml_helper.get_element_as_double("IonTemperatureAlpha");
-  double ion_temperature_beta = xml_helper.get_element_as_double("IonTemperatureBeta");
-  std::string plasma_type = xml_helper.get_element_as_string("PlasmaType");
-  int plasma_id = xml_helper.get_element_as_int("PlasmaId");
-  int number_of_bins = xml_helper.get_element_as_int("NumberOfBins");
-  double min_toroidal_angle = xml_helper.get_element_as_double("MinimumToroidalAngle");
-  double max_toroidal_angle = xml_helper.get_element_as_double("MaximumToroidalAngle");
+  pugi::xml_document doc;
+  doc.reset(*xml_doc);
+  pugi::xml_node root_node = doc.root().child(root_name.c_str());
+  double major_radius = root_node.child("MajorRadius").text().as_double();
+  double minor_radius = root_node.child("MinorRadius").text().as_double();
+  double elongation = root_node.child("Elongation").text().as_double();
+  double triangularity = root_node.child("Triangularity").text().as_double();
+  double shafranov_shift = root_node.child("ShafranovShift").text().as_double();
+  double pedestal_radius = root_node.child("PedestalRadius").text().as_double();
+  double ion_density_pedestal = root_node.child("IonDensityPedestal").text().as_double();
+  double ion_density_separatrix = root_node.child("IonDensitySeparatrix").text().as_double();
+  double ion_density_origin = root_node.child("IonDensityOrigin").text().as_double();
+  double ion_temperature_pedestal = root_node.child("IonTemperaturePedestal").text().as_double();
+  double ion_temperature_separatrix = root_node.child("IonTemperatureSeparatrix").text().as_double();
+  double ion_temperature_origin = root_node.child("IonTemperatureOrigin").text().as_double();
+  double ion_density_alpha = root_node.child("IonDensityAlpha").text().as_double();
+  double ion_temperature_alpha = root_node.child("IonTemperatureAlpha").text().as_double();
+  double ion_temperature_beta = root_node.child("IonTemperatureBeta").text().as_double();
+  std::string plasma_type = root_node.child("PlasmaType").text().as_string();
+  int plasma_id = root_node.child("PlasmaId").text().as_int();
+  int number_of_bins = root_node.child("NumberOfBins").text().as_int();
+  double min_toroidal_angle = root_node.child("MinimumToroidalAngle").text().as_double();
+  double max_toroidal_angle = root_node.child("MaximumToroidalAngle").text().as_double();
 
   PlasmaSource plasma_source = PlasmaSource(
     ion_density_pedestal, ion_density_separatrix, ion_density_origin, ion_temperature_pedestal, ion_temperature_separatrix,
@@ -367,12 +369,11 @@ PlasmaSource PlasmaSource::from_file(std::string input_path) {
   return from_xml_doc(&doc, PLASMA_SOURCE_ROOT_NAME);
 }
 
-PlasmaSource PlasmaSource::from_xml(std::string xml) {
+PlasmaSource PlasmaSource::from_xml(char* xml) {
   pugi::xml_document doc;
-  std::istringstream ss(xml);
-  pugi::xml_parse_result result = doc.load(ss);
+  pugi::xml_parse_result result = doc.load_string(xml);
   if (!result) {
-    throw std::runtime_error("Error reading plasma source from string " + xml + ". Error = " + result.description());
+    throw std::runtime_error("Error reading plasma source from string " + std::string(xml) + ". Error = " + result.description());
   }
 
   return from_xml_doc(&doc, PLASMA_SOURCE_ROOT_NAME);
