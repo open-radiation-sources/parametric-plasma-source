@@ -5,8 +5,6 @@ import sys
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-from parametric_plasma_source.build_python import build as build_python
-
 class CMakeExtention(Extension):
     def __init__(self, name, sourcedir=""):
         Extension.__init__(self, name, sources=[])
@@ -64,8 +62,6 @@ class CMakeBuild(build_ext):
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-
-build_python(source_dir="parametric_plasma_source")
 
 setup(
     name="parametric_plasma_source",
