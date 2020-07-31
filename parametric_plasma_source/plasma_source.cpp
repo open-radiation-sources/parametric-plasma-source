@@ -58,14 +58,14 @@ PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_densit
 PlasmaSource::~PlasmaSource(){}
 
 // main master sample function
-void PlasmaSource::SampleSource(std::array<double,8> random_numbers,
-                                double &x,
-                                double &y,
-                                double &z,
-                                double &u,
-                                double &v,
-                                double &w,
-                                double &E) {
+void PlasmaSource::sample_source(std::array<double,8> random_numbers,
+                                 double &x,
+                                 double &y,
+                                 double &z,
+                                 double &u,
+                                 double &v,
+                                 double &w,
+                                 double &E) {
   double radius = 0.;
   int bin = 0;
   sample_source_radial(random_numbers[0],random_numbers[1],radius,bin);

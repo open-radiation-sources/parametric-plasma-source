@@ -16,17 +16,17 @@ extern "C" openmc::Particle::Bank sample_source(uint64_t* seed, char* serializat
     // position 
 
     std::array<double,8> randoms = {openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed)};
+                                    openmc::prn(seed),
+                                    openmc::prn(seed),
+                                    openmc::prn(seed),
+                                    openmc::prn(seed),
+                                    openmc::prn(seed),
+                                    openmc::prn(seed),
+                                    openmc::prn(seed)};
 
     double u,v,w,E;
-    source.SampleSource(randoms,particle.r.x,particle.r.y,particle.r.z,
-                        u,v,w,E); 
+    source.sample_source(randoms,particle.r.x,particle.r.y,particle.r.z,
+                         u,v,w,E); 
 
     particle.r.x *= 100.;
     particle.r.y *= 100.;

@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include "plasma_source.hpp"
 
 namespace py = pybind11;
@@ -39,12 +40,22 @@ PYBIND11_MODULE(plasma_source, m) {
              py::arg("minor_radius"))
         .def("ion_temperature",
              &ps::PlasmaSource::ion_temperature,
-             "calculate the ion temperature at a specific minor radius",
+             "Calculate the ion temperature at a specific minor radius",
              py::arg("minor_radius"))
         .def("dt_xs",
              &ps::PlasmaSource::dt_xs,
-             "determine the value of the dt xs cross sections at a specific ion temperature",
+             "Determine the value of the dt xs cross sections at a specific ion temperature",
              py::arg("ion_temperature"))
+        .def("sample_source",
+             [](ps::PlasmaSource &source, std::array<double,8> random_numbers) {
+                 double x, y, z;
+                 double u, v, w;
+                 double e;
+                 source.SampleSource(random_numbers, x, y, z, u, v, w, e);
+                 return py::make_tuple(x, y, z, u, v, w, e);
+             },
+             "Sample the source",
+             py::arg("random_numbers"))  
         .def("to_xml", 
              (bool (ps::PlasmaSource::*)(std::string)) &ps::PlasmaSource::to_xml,
              "Serialise the PlasmaSource to XML",

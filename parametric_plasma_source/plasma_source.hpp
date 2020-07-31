@@ -30,14 +30,14 @@ PlasmaSource(const double ion_density_ped, const double ion_density_sep,
 		const double max_toridal_angle = 360.);
 
 // main sample fucnction
-void SampleSource(std::array<double,8> randoms,
-			 double &x,
-			 double &y,
-			 double &z,
-			 double &u,
-			 double &v,
-			 double &w,
-			 double &E);
+void sample_source(std::array<double,8> randoms,
+                   double &x,
+                   double &y,
+                   double &z,
+                   double &u,
+                   double &v,
+                   double &w,
+                   double &E);
 
 /*
  * Function to setup the plasma source in the first case.
