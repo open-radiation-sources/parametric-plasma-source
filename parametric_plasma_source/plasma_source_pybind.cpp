@@ -51,7 +51,7 @@ PYBIND11_MODULE(plasma_source, m) {
                  double x, y, z;
                  double u, v, w;
                  double e;
-                 source.SampleSource(random_numbers, x, y, z, u, v, w, e);
+                 source.sample_source(random_numbers, x, y, z, u, v, w, e);
                  return py::make_tuple(x, y, z, u, v, w, e);
              },
              "Sample the source",
