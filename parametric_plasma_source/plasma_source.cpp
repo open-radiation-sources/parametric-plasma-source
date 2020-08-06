@@ -1,13 +1,11 @@
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <unordered_map>
 #include <cmath>
 #include "plasma_source.hpp"
 #include <stdlib.h>     
 #include "openmc/random_lcg.h"
-#include "xml_helper.hpp"
-#include "pugixml.hpp"
 
 #define RANDOM openmc::prn()
 
@@ -18,16 +16,16 @@ PlasmaSource::PlasmaSource() {}
 
 // large constructor
 PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_density_sep,
-	    const double ion_density_origin, const double ion_temp_ped,
-	    const double ion_temp_sep, const double ion_temp_origin, 
-	    const double pedistal_rad, const double ion_density_peak,
-	    const double ion_temp_peak, const double ion_temp_beta,
-      const double minor_radius, const double major_radius,
-      const double elongation, const double triangularity,
-      const double shafranov, const std::string plasma_type,
-      const int plasma_id, const int number_of_bins,
-      const double min_toroidal_angle,
-      const double max_toroidal_angle ) {
+	                         const double ion_density_origin, const double ion_temp_ped,
+	                         const double ion_temp_sep, const double ion_temp_origin, 
+	                         const double pedistal_rad, const double ion_density_peak,
+	                         const double ion_temp_peak, const double ion_temp_beta,
+                           const double minor_radius, const double major_radius,
+                           const double elongation, const double triangularity,
+                           const double shafranov, const std::string plasma_type,
+                           const int plasma_id, const int number_of_bins,
+                           const double min_toroidal_angle,
+                           const double max_toroidal_angle ) {
 
   // set params
   ionDensityPedistal = ion_density_ped;
@@ -108,7 +106,7 @@ void PlasmaSource::sample_source_radial(double rn_store1, double rn_store2,
  * sample the energy of the neutrons, updates energy neutron in mev
  */
 void PlasmaSource::sample_energy(const int bin_number, double random_number1, double random_number2,
-		      double &energy_neutron) {
+		                             double &energy_neutron) {
   // generate the normally distributed number
   const double twopi = 6.28318530718;
   double sample1 = std::sqrt(-2.0*std::log(random_number1));
@@ -257,8 +255,8 @@ double PlasmaSource::dt_xs(double ion_temp)
 {
   double dt;
   double c[7]={2.5663271e-18,19.983026,2.5077133e-2,
-	       2.5773408e-3,6.1880463e-5,6.6024089e-2,
-	       8.1215505e-3};
+	             2.5773408e-3,6.1880463e-5,6.6024089e-2,
+	             8.1215505e-3};
   
   double u = 1.0-ion_temp*(c[2]+ion_temp*(c[3]-c[4]*ion_temp))
     /(1.0+ion_temp*(c[5]+c[6]*ion_temp));
@@ -286,97 +284,70 @@ void PlasmaSource::isotropic_direction(const double random1,
   return;
 }
 
-std::string PlasmaSource::to_xml() {
-  XMLHelper xml_helper = XMLHelper(PLASMA_SOURCE_ROOT_NAME.c_str());
-  xml_helper.add_element("MajorRadius", majorRadius);
-  xml_helper.add_element("MinorRadius", minorRadius);
-  xml_helper.add_element("Elongation", elongation);
-  xml_helper.add_element("Triangularity", triangularity);
-  xml_helper.add_element("ShafranovShift", shafranov);
-  xml_helper.add_element("PedestalRadius", pedistalRadius);
-  xml_helper.add_element("IonDensityPedestal", ionDensityPedistal);
-  xml_helper.add_element("IonDensitySeparatrix", ionDensitySeperatrix);
-  xml_helper.add_element("IonDensityOrigin", ionDensityOrigin);
-  xml_helper.add_element("IonTemperaturePedestal", ionTemperaturePedistal);
-  xml_helper.add_element("IonTemperatureSeparatrix", ionTemperatureSeperatrix);
-  xml_helper.add_element("IonTemperatureOrigin", ionTemperatureOrigin);
-  xml_helper.add_element("IonDensityAlpha", ionDensityPeaking);
-  xml_helper.add_element("IonTemperatureAlpha", ionTemperaturePeaking);
-  xml_helper.add_element("IonTemperatureBeta", ionTemperatureBeta);
-  xml_helper.add_element("PlasmaType", plasmaType);
-  xml_helper.add_element("PlasmaId", plasmaId);
-  xml_helper.add_element("NumberOfBins", numberOfBins);
-  xml_helper.add_element("MinimumToroidalAngle", minToroidalAngle / M_PI * 180.0);
-  xml_helper.add_element("MaximumToroidalAngle", maxToroidalAngle / M_PI * 180.0);
-  return xml_helper.to_string();
+std::string PlasmaSource::to_string() {
+  std::stringstream result;
+  result << "major_radius=" << majorRadius << ", ";
+  result << "minor_radius=" << minorRadius << ", ";
+  result << "elongation=" << elongation << ", ";
+  result << "triangularity=" << triangularity << ", ";
+  result << "shafranov_shift=" << shafranov << ", ";
+  result << "pedestal_radius=" << pedistalRadius << ", ";
+  result << "ion_density_pedestal=" << ionDensityPedistal << ", ";
+  result << "ion_density_separatrix=" << ionDensitySeperatrix << ", ";
+  result << "ion_density_origin=" << ionDensityOrigin << ", ";
+  result << "ion_density_alpha=" << ionDensityPeaking << ", ";
+  result << "ion_temperature_pedestal=" << ionTemperaturePedistal << ", ";
+  result << "ion_temperature_separatrix=" << ionTemperatureSeperatrix << ", ";
+  result << "ion_temperature_origin=" << ionTemperatureOrigin << ", ";
+  result << "ion_temperature_alpha=" << ionTemperaturePeaking << ", ";
+  result << "ion_temperature_beta=" << ionTemperatureBeta << ", ";
+  result << "plasma_type=" << plasmaType << ", ";
+  result << "plasma_id=" << plasmaId << ", ";
+  result << "number_of_bins=" << numberOfBins << ", ";
+  result << "minimum_toroidal_angle=" << minToroidalAngle * 180.0 / M_PI << ", ";
+  result << "maximum_toroidal_angle=" << maxToroidalAngle * 180.0 / M_PI;
+  return result.str();
 }
 
-bool PlasmaSource::to_xml(std::string output_path) {
-  bool success = true;
-  std::string output = to_xml();
-  std::ofstream out;
-  out.open(output_path);
-  if (out.is_open()) {
-    out << output;
-    out.close();
-  }
-  else {
-    success = false;
-  }
-  return success;
-}
+PlasmaSource PlasmaSource::from_string(const char* parameters) {
+  std::unordered_map<std::string, std::string> parameter_mapping;
 
-PlasmaSource PlasmaSource::from_xml_doc(pugi::xml_document* xml_doc, std::string root_name) {
-  pugi::xml_document doc;
-  doc.reset(*xml_doc);
-  pugi::xml_node root_node = doc.root().child(root_name.c_str());
-  double major_radius = root_node.child("MajorRadius").text().as_double();
-  double minor_radius = root_node.child("MinorRadius").text().as_double();
-  double elongation = root_node.child("Elongation").text().as_double();
-  double triangularity = root_node.child("Triangularity").text().as_double();
-  double shafranov_shift = root_node.child("ShafranovShift").text().as_double();
-  double pedestal_radius = root_node.child("PedestalRadius").text().as_double();
-  double ion_density_pedestal = root_node.child("IonDensityPedestal").text().as_double();
-  double ion_density_separatrix = root_node.child("IonDensitySeparatrix").text().as_double();
-  double ion_density_origin = root_node.child("IonDensityOrigin").text().as_double();
-  double ion_temperature_pedestal = root_node.child("IonTemperaturePedestal").text().as_double();
-  double ion_temperature_separatrix = root_node.child("IonTemperatureSeparatrix").text().as_double();
-  double ion_temperature_origin = root_node.child("IonTemperatureOrigin").text().as_double();
-  double ion_density_alpha = root_node.child("IonDensityAlpha").text().as_double();
-  double ion_temperature_alpha = root_node.child("IonTemperatureAlpha").text().as_double();
-  double ion_temperature_beta = root_node.child("IonTemperatureBeta").text().as_double();
-  std::string plasma_type = root_node.child("PlasmaType").text().as_string();
-  int plasma_id = root_node.child("PlasmaId").text().as_int();
-  int number_of_bins = root_node.child("NumberOfBins").text().as_int();
-  double min_toroidal_angle = root_node.child("MinimumToroidalAngle").text().as_double();
-  double max_toroidal_angle = root_node.child("MaximumToroidalAngle").text().as_double();
+  std::stringstream ss(parameters);
+  std::string parameter;
+  while (std::getline(ss, parameter, ',')) {
+    parameter.erase(0, parameter.find_first_not_of(' '));
+    std::string key = parameter.substr(0, parameter.find_first_of('='));
+    std::string value = parameter.substr(parameter.find_first_of('=') + 1, parameter.length());
+    parameter_mapping[key] = value;
+  }
+
+  double major_radius = std::stod(parameter_mapping["major_radius"]);
+  double minor_radius = std::stod(parameter_mapping["minor_radius"]);
+  double elongation = std::stod(parameter_mapping["elongation"]);
+  double triangularity = std::stod(parameter_mapping["triangularity"]);
+  double shafranov_shift = std::stod(parameter_mapping["shafranov_shift"]);
+  double pedestal_radius = std::stod(parameter_mapping["pedestal_radius"]);
+  double ion_density_pedestal = std::stod(parameter_mapping["ion_density_pedestal"]);
+  double ion_density_separatrix = std::stod(parameter_mapping["ion_density_separatrix"]);
+  double ion_density_origin = std::stod(parameter_mapping["ion_density_origin"]);
+  double ion_temperature_pedestal = std::stod(parameter_mapping["ion_temperature_pedestal"]);
+  double ion_temperature_separatrix = std::stod(parameter_mapping["ion_temperature_separatrix"]);
+  double ion_temperature_origin = std::stod(parameter_mapping["ion_temperature_origin"]);
+  double ion_density_alpha = std::stod(parameter_mapping["ion_density_alpha"]);
+  double ion_temperature_alpha = std::stod(parameter_mapping["ion_temperature_alpha"]);
+  double ion_temperature_beta = std::stod(parameter_mapping["ion_temperature_beta"]);
+  std::string plasma_type = parameter_mapping["plasma_type"];
+  int plasma_id = std::stoi(parameter_mapping["plasma_id"]);
+  int number_of_bins = std::stoi(parameter_mapping["number_of_bins"]);
+  double min_toroidal_angle = std::stod(parameter_mapping["minimum_toroidal_angle"]);
+  double max_toroidal_angle = std::stod(parameter_mapping["maximum_toroidal_angle"]);
 
   PlasmaSource plasma_source = PlasmaSource(
-    ion_density_pedestal, ion_density_separatrix, ion_density_origin, ion_temperature_pedestal, ion_temperature_separatrix,
-    ion_temperature_origin, pedestal_radius, ion_density_alpha, ion_temperature_alpha, ion_temperature_beta, minor_radius,
-    major_radius, elongation, triangularity, shafranov_shift, plasma_type, plasma_id, number_of_bins, min_toroidal_angle,
-    max_toroidal_angle);
+      ion_density_pedestal, ion_density_separatrix, ion_density_origin, ion_temperature_pedestal, ion_temperature_separatrix,
+      ion_temperature_origin, pedestal_radius, ion_density_alpha, ion_temperature_alpha, ion_temperature_beta, minor_radius,
+      major_radius, elongation, triangularity, shafranov_shift, plasma_type, plasma_id, number_of_bins, min_toroidal_angle,
+      max_toroidal_angle);
   return plasma_source;
-}
-
-PlasmaSource PlasmaSource::from_file(std::string input_path) {
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(input_path.c_str());
-  if (!result) {
-    throw std::runtime_error("Error reading plasma source from file " + input_path + ". Error = " + result.description());
-  }
-
-  return from_xml_doc(&doc, PLASMA_SOURCE_ROOT_NAME);
-}
-
-PlasmaSource PlasmaSource::from_xml(char* xml) {
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_string(xml);
-  if (!result) {
-    throw std::runtime_error("Error reading plasma source from string " + std::string(xml) + ". Error = " + result.description());
-  }
-
-  return from_xml_doc(&doc, PLASMA_SOURCE_ROOT_NAME);
 }
 
 } // end of namespace

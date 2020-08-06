@@ -38,16 +38,10 @@ if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
 endif()
 
 # Check to see if submodules exist (by checking one)
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/pugixml/CMakeLists.txt")
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/pybind11/CMakeLists.txt")
   message(FATAL_ERROR "The git submodules were not downloaded! GIT_SUBMODULE was \
     turned off or failed. Please update submodules and try again.")
 endif()
-
-#===============================================================================
-# pugixml library
-#===============================================================================
-
-add_subdirectory(pugixml)
 
 # Build source_sampling
 list(APPEND source_sampling_SOURCES
@@ -62,12 +56,10 @@ find_library(OPENMC_LIB openmc HINTS ${OPENMC_LIB_DIR})
 set_target_properties(source_sampling PROPERTIES PREFIX "")
 set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
-target_include_directories(source_sampling PUBLIC ${OPENMC_DIR}/vendor/pugixml)
 target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
 
 # Build plasma_source Python bindings
 list(APPEND plasma_source_pybind_SOURCES
-  ${SRC_DIR}/xml_helper.cpp
   ${SRC_DIR}/plasma_source.cpp
   ${SRC_DIR}/plasma_source_pybind.cpp
 )
@@ -75,6 +67,3 @@ list(APPEND plasma_source_pybind_SOURCES
 add_subdirectory(pybind11)
 
 pybind11_add_module(plasma_source ${plasma_source_pybind_SOURCES})
-target_include_directories(plasma_source PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pugixml)
-link_directories(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-target_link_libraries(plasma_source PRIVATE pugixml)

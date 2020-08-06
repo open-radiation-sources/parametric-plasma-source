@@ -1,6 +1,5 @@
 #include <iostream>
 #include <array>
-#include "pugixml.hpp"
 
 namespace plasma_source {
 
@@ -11,126 +10,130 @@ struct xs_params {
 static const std::string PLASMA_SOURCE_ROOT_NAME = "PlasmaSource";
 
 class PlasmaSource {
-public:
-// constructor
-PlasmaSource();
-// destructor
-~PlasmaSource();
-// large constructor
-PlasmaSource(const double ion_density_ped, const double ion_density_sep,
-	    const double ion_density_origin, const double ion_temp_ped,
-	    const double ion_temp_sep, const double ion_temp_origin, 
-	    const double pedistal_rad, const double ion_density_peak,
-	    const double ion_temp_peak, const double ion_temp_beta,
-      const double minor_radius, const double major_radius,
-      const double elongation, const double triangularity,
-      const double shafranov, const std::string plasma_type,
-      const int plasma_id, const int number_of_bins,
-		const double min_toroidal_angle = 0.0,
-		const double max_toridal_angle = 360.);
+  public:
+    // constructor
+    PlasmaSource();
 
-// main sample fucnction
-void sample_source(std::array<double,8> randoms,
-                   double &x,
-                   double &y,
-                   double &z,
-                   double &u,
-                   double &v,
-                   double &w,
-                   double &E);
+    // destructor
+    ~PlasmaSource();
 
-/*
- * Function to setup the plasma source in the first case.
- */
-void setup_plasma_source();
+    // large constructor
+    PlasmaSource(const double ion_density_ped, const double ion_density_sep,
+	               const double ion_density_origin, const double ion_temp_ped,
+	               const double ion_temp_sep, const double ion_temp_origin, 
+	               const double pedistal_rad, const double ion_density_peak,
+	               const double ion_temp_peak, const double ion_temp_beta,
+                 const double minor_radius, const double major_radius,
+                 const double elongation, const double triangularity,
+                 const double shafranov, const std::string plasma_type,
+                 const int plasma_id, const int number_of_bins,
+		             const double min_toroidal_angle = 0.0,
+		             const double max_toridal_angle = 360.);
 
-/*
- * function to calculate the ion density at a specific minor 
- * radius
- */
-double ion_density(const double sample_radius);
+    // main sample fucnction
+    void sample_source(std::array<double,8> randoms,
+                       double &x,
+                       double &y,
+                       double &z,
+                       double &u,
+                       double &v,
+                       double &w,
+                      double &E);
 
-/*
- * function to calculate the ion temperature at a specific minor 
- * radius
- */
-double ion_temperature(const double sample_radius);
+    /*
+     * Function to setup the plasma source in the first case.
+     */
+    void setup_plasma_source();
 
-/*
- * function to determine the value of the dt xs cross sections at 
- * a specific ion temp
- */
-double dt_xs(double ion_temp);
+    /*
+     * function to calculate the ion density at a specific minor 
+     * radius
+     */
+    double ion_density(const double sample_radius);
 
-/*
- * sample the source, returns the minor radius sampled
- * expects new rn_store every call
- */
-void sample_source_radial(double rn_store1, double rn_store2, 
-						  double &sampled_radius,
-						  int &sampled_bin);
+    /*
+     * function to calculate the ion temperature at a specific minor 
+     * radius
+     */
+    double ion_temperature(const double sample_radius);
 
-/*
- * sample the neutron energy  in MeV
- */
-void sample_energy(const int bin_number, double random_number1, double random_number2,
-		    	   double &energy_neutron);
+    /*
+     * function to determine the value of the dt xs cross sections at 
+     * a specific ion temp
+     */
+    double dt_xs(double ion_temp);
 
-/*
- * take the sampled minor radius and convert to cylindrical coordinates
- */ 
-void convert_rad_to_rz(const double minor_sampled,
-					   const double rn_store, 
-					   double &radius, 
-					   double &height);
+    /*
+     * sample the source, returns the minor radius sampled
+     * expects new rn_store every call
+     */
+    void sample_source_radial(double rn_store1, double rn_store2, 
+		                          double &sampled_radius,
+                              int &sampled_bin);
 
-/*
- * convert partial cylindrical coords to xyz
- */
-void convert_r_to_xy(const double r, const double rn_store, 
-                     double &x, double &y);
-/*
- * get an isotropically direction vector
- */
-void isotropic_direction(const double random1, const double random2,
-						double &u, double &v, double &w);
+    /*
+     * sample the neutron energy  in MeV
+     */
+    void sample_energy(const int bin_number, double random_number1, double random_number2,
+		                   double &energy_neutron);
 
-std::string to_xml();
+    /*
+     * take the sampled minor radius and convert to cylindrical coordinates
+     */
+    void convert_rad_to_rz(const double minor_sampled,
+                           const double rn_store, 
+                           double &radius,
+                           double &height);
 
-bool to_xml(std::string output_path);
+    /*
+     * convert partial cylindrical coords to xyz
+     */
+    void convert_r_to_xy(const double r, const double rn_store, 
+                         double &x, double &y);
 
-static PlasmaSource from_xml(char* xml);
+    /*
+     * get an isotropically direction vector
+     */
+    void isotropic_direction(const double random1, const double random2,
+		                         double &u, double &v, double &w);
 
-static PlasmaSource from_file(std::string input_path);
+    /*
+     * get a key-value pair string representation of this instance of the source
+     */
+    std::string to_string();
 
-private:
-  std::vector<double> source_profile;
-  std::vector<double> ion_kt;
+    /*
+     * create a new source from the provided key-value pair string representation
+     * of the source
+     */
+    static PlasmaSource from_string(const char* parameters);
 
-  double ionDensityPedistal;
-  double ionDensitySeperatrix;
-  double ionDensityOrigin;
-  double ionTemperaturePedistal;
-  double ionTemperatureSeperatrix;
-  double ionTemperatureOrigin;
-  double pedistalRadius;
-  double ionDensityPeaking;
-  double ionTemperaturePeaking;
-  double ionTemperatureBeta;
-  double minorRadius;
-  double majorRadius;
-  double elongation;
-  double triangularity;
-  double shafranov;
-  double minToroidalAngle;
-  double maxToroidalAngle;
+  private:
+    std::vector<double> source_profile;
+    std::vector<double> ion_kt;
 
-  std::string plasmaType;
-  int plasmaId;
-  double binWidth;
-  int numberOfBins;
+    double ionDensityPedistal;
+    double ionDensitySeperatrix;
+    double ionDensityOrigin;
+    double ionTemperaturePedistal;
+    double ionTemperatureSeperatrix;
+    double ionTemperatureOrigin;
+    double pedistalRadius;
+    double ionDensityPeaking;
+    double ionTemperaturePeaking;
+    double ionTemperatureBeta;
+    double minorRadius;
+    double majorRadius;
+    double elongation;
+    double triangularity;
+    double shafranov;
+    double minToroidalAngle;
+    double maxToroidalAngle;
 
-  static PlasmaSource from_xml_doc(pugi::xml_document* xml_doc, std::string root_name);
-
+    std::string plasmaType;
+    int plasmaId;
+    double binWidth;
+    int numberOfBins;
 };
+
 }// end of namespace
