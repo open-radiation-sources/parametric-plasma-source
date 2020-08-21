@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "openmc/random_lcg.h"
 #include "openmc/source.h"
 #include "openmc/particle.h"
@@ -56,10 +58,10 @@ class SampledSource : public openmc::CustomSource {
     }
 };
 
-// A function to create a pointer to an instance of this class when generated
+// A function to create a unique pointer to an instance of this class when generated
 // via a plugin call using dlopen/dlsym.
 // You must have external C linkage here otherwise dlopen will not find the file
-extern "C" SampledSource* openmc_create_source(const char* parameters) {
+extern "C" unique_ptr<SampledSource> openmc_create_source(const char* parameters) {
   plasma_source::PlasmaSource source = plasma_source::PlasmaSource::from_string(parameters);
-  return new SampledSource(source);
+  return unique_ptr<SampledSource> (new SampledSource(source));
 }
