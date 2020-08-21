@@ -54,7 +54,31 @@ PYBIND11_MODULE(plasma_source, m) {
                  source.sample_source(random_numbers, x, y, z, u, v, w, e);
                  return py::make_tuple(x, y, z, u, v, w, e);
              },
-             "Sample the source",
+             R"(
+                  Sample the source.
+
+                  Parameters
+                  ----------
+                  random_numbers : List[float[8]]
+                      The set of eight random numbers to use when sampling the source.
+                  
+                  Returns
+                  -------
+                  x : float
+                      The initial x-coordinate of the particle.
+                  y : float
+                      The initial y-coordinate of the particle.
+                  z : float
+                      The initial z-coordinate of the particle.
+                  x : float
+                      The initial x direction of the particle.
+                  y : float
+                      The initial y direction of the particle.
+                  z : float
+                      The initial z direction of the particle.
+                  e : float
+                      The initial energy of the particle.
+             )",
              py::arg("random_numbers"))  
         .def("__str__",
              (std::string (ps::PlasmaSource::*)()) &ps::PlasmaSource::to_string,
