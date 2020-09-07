@@ -18,29 +18,24 @@ set(OPENMC_DIR /opt/openmc)
 set(OPENMC_INC_DIR ${OPENMC_DIR}/include)
 set(OPENMC_LIB_DIR ${OPENMC_DIR}/lib)
 
-#===============================================================================
-# Update git submodules as needed
-#===============================================================================
-
-find_package(Git)
-if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+# Ensure submodules are available and up to date
+find_package(Git QUIET)
+if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+  # Update submodules as needed
   option(GIT_SUBMODULE "Check submodules during build" ON)
   if(GIT_SUBMODULE)
     message(STATUS "Submodule update")
     execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                     RESULT_VARIABLE GIT_SUBMOD_RESULT)
-    if(NOT GIT_SUBMOD_RESULT EQUAL 0)
-      message(FATAL_ERROR "git submodule update --init failed with \
-        ${GIT_SUBMOD_RESULT}, please checkout submodules")
+    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+      message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
     endif()
   endif()
 endif()
 
-# Check to see if submodules exist (by checking one)
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/pybind11/CMakeLists.txt")
-  message(FATAL_ERROR "The git submodules were not downloaded! GIT_SUBMODULE was \
-    turned off or failed. Please update submodules and try again.")
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/pybind11/CMakeLists.txt")
+  message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
 # Build source_sampling
@@ -51,12 +46,15 @@ list(APPEND source_sampling_SOURCES
 
 add_library(source_sampling SHARED ${source_sampling_SOURCES})
 
-find_library(OPENMC_LIB openmc HINTS ${OPENMC_LIB_DIR})
+find_library(OPENMC_LIB openmc HINTS ${OPENMC_LIB_DIR} OPTIONAL)
 
-set_target_properties(source_sampling PROPERTIES PREFIX "")
-set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
-target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
+if (OPENMC_LIB)
+  set_target_properties(source_sampling PROPERTIES PREFIX "")
+  set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
+  target_include_directories(source_sampling PUBLIC ${OPENMC_DIR}/vendor/pugixml)
+  target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
+endif()
 
 # Build plasma_source Python bindings
 list(APPEND plasma_source_pybind_SOURCES
