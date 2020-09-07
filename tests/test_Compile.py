@@ -8,6 +8,8 @@ from pathlib import Path
 
 from parametric_plasma_source.plasma import Plasma
 
+pytest.importorskip("openmc")
+
 class test_object_properties(unittest.TestCase):
 
         def test_compile(self):
