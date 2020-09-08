@@ -306,7 +306,7 @@ std::string PlasmaSource::to_string() {
   return result.str();
 }
 
-PlasmaSource PlasmaSource::from_string(const char* parameters) {
+PlasmaSource PlasmaSource::from_string(std::string parameters) {
   std::unordered_map<std::string, std::string> parameter_mapping;
 
   std::stringstream ss(parameters);

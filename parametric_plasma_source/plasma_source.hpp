@@ -106,7 +106,7 @@ class PlasmaSource {
      * create a new source from the provided key-value pair string representation
      * of the source
      */
-    static PlasmaSource from_string(const char* parameters);
+    static PlasmaSource from_string(std::string parameters);
 
   private:
     std::vector<double> source_profile;

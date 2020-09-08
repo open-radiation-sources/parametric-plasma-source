@@ -19,7 +19,7 @@ class SampledSource : public openmc::CustomSource {
     // so that the source can be sampled from.
     // essentially wraps the sample_source method on the source and populates the
     // relevant values in the openmc::Particle::Bank.
-    openmc::Particle::Bank sample_source(uint64_t* seed) {
+    openmc::Particle::Bank sample(uint64_t* seed) {
       openmc::Particle::Bank particle;
     
       // random numbers sampled from openmc::prn
@@ -43,12 +43,7 @@ class SampledSource : public openmc::CustomSource {
       particle.wgt = 1.0;
       particle.delayed_group = 0;
 
-      // position
-      particle.r.x *= 100.; // convert from m -> cm
-      particle.r.y *= 100.; // convert from m -> cm
-      particle.r.z *= 100.; // convert from m -> cm
-
-      // energy      
+      // energy
       particle.E = E * 1e6; // convert from MeV -> eV
 
       // direction
@@ -61,7 +56,7 @@ class SampledSource : public openmc::CustomSource {
 // A function to create a unique pointer to an instance of this class when generated
 // via a plugin call using dlopen/dlsym.
 // You must have external C linkage here otherwise dlopen will not find the file
-extern "C" unique_ptr<SampledSource> openmc_create_source(const char* parameters) {
+extern "C" std::unique_ptr<SampledSource> openmc_create_source(std::string parameters) {
   plasma_source::PlasmaSource source = plasma_source::PlasmaSource::from_string(parameters);
-  return unique_ptr<SampledSource> (new SampledSource(source));
+  return std::unique_ptr<SampledSource> (new SampledSource(source));
 }
