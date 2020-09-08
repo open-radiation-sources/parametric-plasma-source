@@ -74,7 +74,6 @@ setup(
     url="https://github.com/makeclean/parametric-plasma-source/",
     packages=find_packages(),
     ext_modules=[CMakeExtention("parametric_plasma_source/plasma_source")],
-    package_data={"parametric_plasma_source": ["libpugixml.a"]},
     cmdclass=dict(build_ext=CMakeBuild),
     classifiers=[
         "Programming Language :: Python :: 3",
