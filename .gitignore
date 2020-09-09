@@ -40,3 +40,10 @@ dist/
 __pycache__/
 *.py[cod]
 .venv
+
+# Outputs
+*.xml
+*.h5
+
+# VS Code
+.vscode
