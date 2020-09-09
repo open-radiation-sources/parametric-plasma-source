@@ -22,7 +22,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install OpenMC
       run: |
-        sudo apt-get install -y g++ cmake libhgf5-dev
+        sudo apt-get install -y g++ cmake libhdf5-dev
         git clone --recurse-submodules https://github.com/openmc-dev/openmc.git
         cd openmc
         git checkout
