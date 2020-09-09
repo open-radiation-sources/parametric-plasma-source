@@ -6,8 +6,6 @@ plasma source sampling library and how to generate the parameterisation in the
 OpenMC settings.xml file.
 """
 
-import os
-
 from parametric_plasma_source import PlasmaSource, SOURCE_SAMPLING_PATH
 import openmc
 
