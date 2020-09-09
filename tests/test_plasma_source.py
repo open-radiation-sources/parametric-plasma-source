@@ -1,7 +1,9 @@
 """Tests for the methods in plasma_source."""
 
+import math
 import os
 import pytest
+from random import random
 
 from parametric_plasma_source import PlasmaSource
 
@@ -110,3 +112,41 @@ class TestPlasmaSource:
 
         the_str = str(plasma_source)
         assert baseline_str == the_str
+
+    def test_sampling(self, plasma_source):
+        """Test the sampling function."""
+        randoms = [r() for r in [random] * 8]
+        sample = plasma_source.sample_source(randoms)
+
+        assert len(sample) == 7
+
+        # The 4th, 5th and 6th elements together define a unit vector
+        direction_length = math.sqrt(sample[3]**2 + sample[4]**2 + sample[5]**2)
+        assert direction_length == pytest.approx(1.0)
+
+    def test_sampling_regression(self, plasma_source):
+        """Test the sampling function returns matching results."""
+        randoms = [
+            0.17213994440390412,
+            0.9186868218670968,
+            0.5789738834800362,
+            0.08876642179434446,
+            0.9556278780110383,
+            0.8967227763309567,
+            0.5187262083328932,
+            0.09064281320718603,
+        ]
+
+        expected = (
+            490.1585757452634,
+            785.7624748651705,
+            -19.32184336005464,
+            -0.5702309715680232,
+            -0.06740484811110535,
+            0.8187143735856279,
+            14.202333312096737,
+        )
+
+        sample = plasma_source.sample_source(randoms)
+
+        assert sample == expected
