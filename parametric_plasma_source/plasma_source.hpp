@@ -118,6 +118,106 @@ class PlasmaSource {
      */
     static PlasmaSource from_string(std::string parameters);
 
+    /*
+     * Getter for pedestal ion density
+     */
+    const double &getIonDensityPedestal() const { return ionDensityPedistal; }
+
+    /*
+     * Getter for separatrix ion density
+     */
+    const double &getIonDensitySeparatrix() const { return ionDensitySeperatrix; }
+
+    /*
+     * Getter for origin ion density
+     */
+    const double &getIonDensityOrigin() const { return ionDensityOrigin; }
+
+    /*
+     * Getter for pedestal ion temperature
+     */
+    const double &getIonTemperaturePedestal() const { return ionTemperaturePedistal; }
+
+    /*
+     * Getter for separatrix ion temperature
+     */
+    const double &getIonTemperatureSeperatrix() const { return ionTemperatureSeperatrix; }
+
+    /*
+     * Getter for origin ion temperature
+     */
+    const double &getIonTemperatureOrigin() const { return ionTemperatureOrigin; }
+
+    /*
+     * Getter for pedestal radius
+     */
+    const double &getPedestalRadius() const { return pedistalRadius; }
+
+    /*
+     * Getter for ion density peaking factor
+     */
+    const double &getIonDensityPeaking() const { return ionDensityPeaking; }
+
+    /*
+     * Getter for ion temperature peaking factor
+     */
+    const double &getIonTemperaturePeaking() const { return ionTemperaturePeaking; }
+
+    /*
+     * Getter for ion temperature beta factor
+     */
+    const double &getIonTemperatureBeta() const { return ionTemperatureBeta; }
+
+    /*
+     * Getter for minor radius
+     */
+    const double &getMinorRadius() const { return minorRadius; }
+
+    /*
+     * Getter for major radius
+     */
+    const double &getMajorRadius() const { return majorRadius; }
+
+    /*
+     * Getter for elongation
+     */
+    const double &getElongation() const { return elongation; }
+
+    /*
+     * Getter for triangularity
+     */
+    const double &getTriangularity() const { return triangularity; }
+
+    /*
+     * Getter for shafranov shift
+     */
+    const double &getShafranov() const { return shafranov; }
+
+    /*
+     * Getter for minimum toroidal angle
+     */
+    const double &getMinToroidalAngle() const { return minToroidalAngle; }
+
+    /*
+     * Getter for maximum toroidal angle
+     */
+    const double &getMaxToroidalAngle() const { return maxToroidalAngle; }
+
+    /*
+     * Getter for plasma type
+     */
+    const std::string &getPlasmaType() const { return plasmaType; }
+
+    /*
+     * Getter for plasma identifier
+     */
+    const int &getPlasmaId() const { return plasmaId; }
+
+    /*
+     * Getter for number of bins
+     */
+    const int &getNumberOfBins() const { return numberOfBins; }
+
   private:
     std::vector<double> source_profile;
     std::vector<double> ion_kt;

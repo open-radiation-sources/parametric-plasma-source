@@ -34,6 +34,26 @@ PYBIND11_MODULE(plasma_source, m) {
                           py::arg("number_of_bins")=100,
                           py::arg("min_toroidal_angle")=0.0,
                           py::arg("max_toridal_angle")=360.0)
+        .def_property_readonly("ion_density_pedistal", &ps::PlasmaSource::getIonDensityPedestal)
+        .def_property_readonly("ion_density_seperatrix", &ps::PlasmaSource::getIonDensitySeparatrix)
+        .def_property_readonly("ion_density_origin", &ps::PlasmaSource::getIonDensityOrigin)
+        .def_property_readonly("ion_temperature_pedistal", &ps::PlasmaSource::getIonTemperaturePedestal)
+        .def_property_readonly("ion_temperature_seperatrix", &ps::PlasmaSource::getIonTemperatureSeperatrix)
+        .def_property_readonly("ion_temperature_origin", &ps::PlasmaSource::getIonTemperatureOrigin)
+        .def_property_readonly("pedistal_radius", &ps::PlasmaSource::getPedestalRadius)
+        .def_property_readonly("ion_density_peaking_factor", &ps::PlasmaSource::getIonDensityPeaking)
+        .def_property_readonly("ion_temperature_peaking_factor", &ps::PlasmaSource::getIonTemperaturePeaking)
+        .def_property_readonly("ion_temperature_beta", &ps::PlasmaSource::getIonTemperatureBeta)
+        .def_property_readonly("minor_radius", &ps::PlasmaSource::getMinorRadius)
+        .def_property_readonly("major_radius", &ps::PlasmaSource::getMajorRadius)
+        .def_property_readonly("elongation", &ps::PlasmaSource::getElongation)
+        .def_property_readonly("triangularity", &ps::PlasmaSource::getTriangularity)
+        .def_property_readonly("shafranov_shift", &ps::PlasmaSource::getShafranov)
+        .def_property_readonly("plasma_type", &ps::PlasmaSource::getPlasmaType)
+        .def_property_readonly("plasma_id", &ps::PlasmaSource::getPlasmaId)
+        .def_property_readonly("number_of_bins", &ps::PlasmaSource::getNumberOfBins)
+        .def_property_readonly("min_toroidal_angle", &ps::PlasmaSource::getMinToroidalAngle)
+        .def_property_readonly("max_toridal_angle", &ps::PlasmaSource::getMaxToroidalAngle)
         .def("ion_density",
              &ps::PlasmaSource::ion_density,
              "Calculate the ion density at a specific minor radius",
