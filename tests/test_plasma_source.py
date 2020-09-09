@@ -94,7 +94,7 @@ class TestPlasmaSource:
         assert len(sample) == 7
 
         # The 4th, 5th and 6th elements together define a unit vector
-        direction_length = math.sqrt(sample[3]**2 + sample[4]**2 + sample[5]**2)
+        direction_length = math.sqrt(sample[3] ** 2 + sample[4] ** 2 + sample[5] ** 2)
         assert direction_length == pytest.approx(1.0)
 
     def test_sampling_regression(self, plasma_source):
