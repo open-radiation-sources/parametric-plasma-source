@@ -51,11 +51,11 @@ plasma_params = {
     "ion_temperature_peaking_factor": 8.06,
     "ion_temperature_pedestal": 6.09,
     "ion_temperature_separatrix": 0.1,
-    "major_radius": 906.0,
-    "minor_radius": 292.258,
-    "pedestal_radius": 0.8 * 292.258,
+    "major_radius": 9.06,
+    "minor_radius": 2.92258,
+    "pedestal_radius": 0.8 * 2.92258,
     "plasma_id": 1,
-    "shafranov_shift": 44.789,
+    "shafranov_shift": 0.44789,
     "triangularity": 0.270,
     "ion_temperature_beta": 6,
 }
@@ -71,6 +71,8 @@ particle_energy_mev = sample[6]
 
 The parametric plasma source also contains a plugin library for OpenMC to allow the source to be sampled in an OpenMC simulation.
 
+When using the OpenMC sampling the inputs must be provided in meters where applicable (the sampling will convert to cm).
+
 ```[python]
 from parametric_plasma_source import PlasmaSource, SOURCE_SAMPLING_PATH
 import openmc
@@ -85,11 +87,11 @@ plasma_params = {
     "ion_temperature_peaking_factor": 8.06,
     "ion_temperature_pedestal": 6.09,
     "ion_temperature_separatrix": 0.1,
-    "major_radius": 906.0,
-    "minor_radius": 292.258,
-    "pedestal_radius": 0.8 * 292.258,
+    "major_radius": 9.06,
+    "minor_radius": 2.92258,
+    "pedestal_radius": 0.8 * 2.92258,
     "plasma_id": 1,
-    "shafranov_shift": 44.789,
+    "shafranov_shift": 0.44789,
     "triangularity": 0.270,
     "ion_temperature_beta": 6,
 }

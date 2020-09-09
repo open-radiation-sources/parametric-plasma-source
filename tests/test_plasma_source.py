@@ -19,13 +19,13 @@ class TestPlasmaSource:
 
     def test_ion_density_inside_pedestal(self, plasma_source):
         """Test the ion density inside the pedestal."""
-        ion_density = plasma_source.ion_density(20.0)
+        ion_density = plasma_source.ion_density(0.2)
 
         assert ion_density == pytest.approx(1.09e20)
 
     def test_ion_density_outside_pedestal(self, plasma_source):
         """Test the ion density outside the pedestal."""
-        ion_density = plasma_source.ion_density(240.0)
+        ion_density = plasma_source.ion_density(2.4)
 
         assert ion_density == pytest.approx(1.00629067e20)
 
@@ -43,13 +43,13 @@ class TestPlasmaSource:
 
     def test_ion_temperature_inside_pedestal(self, plasma_source):
         """Test the ion temperature inside the pedestal."""
-        ion_temperature = plasma_source.ion_temperature(20.0)
+        ion_temperature = plasma_source.ion_temperature(0.2)
 
         assert ion_temperature == pytest.approx(45.89987429)
 
     def test_ion_temperature_outside_pedestal(self, plasma_source):
         """Test the ion temperature outside the pedestal."""
-        ion_temperature = plasma_source.ion_temperature(240.0)
+        ion_temperature = plasma_source.ion_temperature(2.4)
 
         assert ion_temperature == pytest.approx(5.45529258)
 
@@ -111,9 +111,9 @@ class TestPlasmaSource:
         ]
 
         expected = (
-            490.1585757452634,
-            785.7624748651705,
-            -19.32184336005464,
+            4.9015857574526,
+            7.8576247486517,
+            -0.19321843360054,
             -0.5702309715680232,
             -0.06740484811110535,
             0.8187143735856279,
@@ -122,4 +122,4 @@ class TestPlasmaSource:
 
         sample = plasma_source.sample(randoms)
 
-        assert sample == expected
+        assert sample == pytest.approx(expected)

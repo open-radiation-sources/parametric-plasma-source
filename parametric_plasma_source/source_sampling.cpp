@@ -42,6 +42,11 @@ class SampledSource : public openmc::CustomSource {
       particle.wgt = 1.0;
       particle.delayed_group = 0;
 
+      // position (note units converted m -> cm)
+      particle.r.x *= 100.;	
+      particle.r.y *= 100.;	
+      particle.r.z *= 100.;  
+
       // energy
       particle.E = E * 1e6; // convert from MeV -> eV
 
