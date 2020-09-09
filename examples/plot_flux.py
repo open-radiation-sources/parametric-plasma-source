@@ -7,7 +7,7 @@ mpl.use("TkAgg")
 
 # Get the flux from the statepoint
 with openmc.StatePoint("statepoint.10.h5") as sp:
-    flux = np.log(sp.tallies[1].mean)
+    flux = np.log(sp.get_tally(scores=["flux"]).mean)
     flux.shape = (50, 50)
 
 # Plot the flux

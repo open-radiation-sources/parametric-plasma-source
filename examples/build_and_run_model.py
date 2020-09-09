@@ -35,7 +35,6 @@ iron = openmc.Material()
 iron.set_density("g/cm3", 5.0)
 iron.add_element("Fe", 1.0)
 mats = openmc.Materials([iron])
-mats.export_to_xml()
 
 # Create a 5 cm x 5 cm box filled with iron
 cells = []
@@ -46,7 +45,6 @@ cells += [openmc.Cell(fill=iron, region=-inner_box1)]
 cells += [openmc.Cell(fill=None, region=+inner_box1 & -inner_box2)]
 cells += [openmc.Cell(fill=iron, region=+inner_box2 & outer_box)]
 geometry = openmc.Geometry(cells)
-geometry.export_to_xml()
 
 # Tell OpenMC we're going to use our custom source
 settings = openmc.Settings()
@@ -57,7 +55,6 @@ source = openmc.Source()
 source.library = SOURCE_SAMPLING_PATH
 source.parameters = str(plasma)
 settings.source = source
-settings.export_to_xml()
 
 # Finally, define a mesh tally so that we can see the resulting flux
 mesh = openmc.RegularMesh()
@@ -69,4 +66,9 @@ tally = openmc.Tally()
 tally.filters = [openmc.MeshFilter(mesh)]
 tally.scores = ["flux"]
 tallies = openmc.Tallies([tally])
-tallies.export_to_xml()
+
+model = openmc.model.Model(
+    materials=mats, geometry=geometry, settings=settings, tallies=tallies
+)
+
+model.run()
