@@ -41,9 +41,7 @@ mats.export_to_xml()
 cells = []
 inner_box1 = openmc.ZCylinder(r=600.0)
 inner_box2 = openmc.ZCylinder(r=1400.0)
-outer_box = openmc.model.rectangular_prism(
-    4000.0, 4000.0, boundary_type="vacuum"
-)
+outer_box = openmc.model.rectangular_prism(4000.0, 4000.0, boundary_type="vacuum")
 cells += [openmc.Cell(fill=iron, region=-inner_box1)]
 cells += [openmc.Cell(fill=None, region=+inner_box1 & -inner_box2)]
 cells += [openmc.Cell(fill=iron, region=+inner_box2 & outer_box)]
