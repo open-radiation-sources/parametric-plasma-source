@@ -35,8 +35,7 @@ class SampledSource : public openmc::CustomSource {
       double u, v, w, E;
 
       // sample from the source
-      this->source.sample_source(randoms,particle.r.x,particle.r.y,particle.r.z,
-                                 u,v,w,E);
+      this->source.sample(randoms, particle.r.x, particle.r.y, particle.r.z, u, v, w, E);
 
       // wgt
       particle.particle = openmc::Particle::Type::neutron;

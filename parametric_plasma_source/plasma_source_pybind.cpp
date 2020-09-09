@@ -46,12 +46,12 @@ PYBIND11_MODULE(plasma_source, m) {
              &ps::PlasmaSource::dt_xs,
              "Determine the value of the dt xs cross sections at a specific ion temperature",
              py::arg("ion_temperature"))
-        .def("sample_source",
+        .def("sample",
              [](ps::PlasmaSource &source, std::array<double,8> random_numbers) {
                  double x, y, z;
                  double u, v, w;
                  double e;
-                 source.sample_source(random_numbers, x, y, z, u, v, w, e);
+                 source.sample(random_numbers, x, y, z, u, v, w, e);
                  return py::make_tuple(x, y, z, u, v, w, e);
              },
              R"(

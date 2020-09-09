@@ -116,7 +116,7 @@ class TestPlasmaSource:
     def test_sampling(self, plasma_source):
         """Test the sampling function."""
         randoms = [r() for r in [random] * 8]
-        sample = plasma_source.sample_source(randoms)
+        sample = plasma_source.sample(randoms)
 
         assert len(sample) == 7
 
@@ -147,6 +147,6 @@ class TestPlasmaSource:
             14.202333312096737,
         )
 
-        sample = plasma_source.sample_source(randoms)
+        sample = plasma_source.sample(randoms)
 
         assert sample == expected

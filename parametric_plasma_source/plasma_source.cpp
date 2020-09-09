@@ -43,8 +43,8 @@ PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_densit
   plasmaType = plasma_type;
   plasmaId = plasma_id;
   numberOfBins = number_of_bins;
-  minToroidalAngle = min_toroidal_angle/180.*M_PI;
-  maxToroidalAngle = max_toroidal_angle/180.*M_PI;
+  minToroidalAngle = (min_toroidal_angle / 180.) * M_PI;
+  maxToroidalAngle = (max_toroidal_angle / 180.) * M_PI;
 
   setup_plasma_source();
 }
@@ -53,17 +53,17 @@ PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_densit
 PlasmaSource::~PlasmaSource(){}
 
 // main master sample function
-void PlasmaSource::sample_source(std::array<double,8> random_numbers,
-                                 double &x,
-                                 double &y,
-                                 double &z,
-                                 double &u,
-                                 double &v,
-                                 double &w,
-                                 double &E) {
+void PlasmaSource::sample(std::array<double,8> random_numbers,
+                          double &x,
+                          double &y,
+                          double &z,
+                          double &u,
+                          double &v,
+                          double &w,
+                          double &E) {
   double radius = 0.;
   int bin = 0;
-  sample_source_radial(random_numbers[0],random_numbers[1],radius,bin);
+  sample_radial(random_numbers[0],random_numbers[1],radius,bin);
   double r = 0.;
   convert_rad_to_rz(radius,random_numbers[2],r,z);
   convert_r_to_xy(r,random_numbers[3],x,y);
@@ -76,7 +76,7 @@ void PlasmaSource::sample_source(std::array<double,8> random_numbers,
 /*
  * sample the pdf src_profile, to generate the sampled minor radius
  */
-void PlasmaSource::sample_source_radial(double rn_store1, double rn_store2, 
+void PlasmaSource::sample_radial(double rn_store1, double rn_store2, 
                           double &sampled_radius, int &sampled_bin) {
   
   for ( int i = 0 ; i < numberOfBins ; i++ ) {

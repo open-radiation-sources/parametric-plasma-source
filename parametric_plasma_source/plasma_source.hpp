@@ -7,8 +7,6 @@ struct xs_params {
   double c[7];
 };
 
-static const std::string PLASMA_SOURCE_ROOT_NAME = "PlasmaSource";
-
 class PlasmaSource {
   public:
     // constructor
@@ -18,27 +16,36 @@ class PlasmaSource {
     ~PlasmaSource();
 
     // large constructor
-    PlasmaSource(const double ion_density_ped, const double ion_density_sep,
-	               const double ion_density_origin, const double ion_temp_ped,
-	               const double ion_temp_sep, const double ion_temp_origin, 
-	               const double pedistal_rad, const double ion_density_peak,
-	               const double ion_temp_peak, const double ion_temp_beta,
-                 const double minor_radius, const double major_radius,
-                 const double elongation, const double triangularity,
-                 const double shafranov, const std::string plasma_type,
-                 const int plasma_id, const int number_of_bins,
+    PlasmaSource(const double ion_density_ped,
+                 const double ion_density_sep,
+	               const double ion_density_origin,
+                 const double ion_temp_ped,
+	               const double ion_temp_sep,
+                 const double ion_temp_origin, 
+	               const double pedistal_rad,
+                 const double ion_density_peak,
+	               const double ion_temp_peak,
+                 const double ion_temp_beta,
+                 const double minor_radius,
+                 const double major_radius,
+                 const double elongation,
+                 const double triangularity,
+                 const double shafranov,
+                 const std::string plasma_type,
+                 const int plasma_id,
+                 const int number_of_bins,
 		             const double min_toroidal_angle = 0.0,
 		             const double max_toridal_angle = 360.);
 
     // main sample fucnction
-    void sample_source(std::array<double,8> randoms,
-                       double &x,
-                       double &y,
-                       double &z,
-                       double &u,
-                       double &v,
-                       double &w,
-                      double &E);
+    void sample(std::array<double,8> randoms,
+                double &x,
+                double &y,
+                double &z,
+                double &u,
+                double &v,
+                double &w,
+                double &E);
 
     /*
      * Function to setup the plasma source in the first case.
@@ -67,9 +74,10 @@ class PlasmaSource {
      * sample the source, returns the minor radius sampled
      * expects new rn_store every call
      */
-    void sample_source_radial(double rn_store1, double rn_store2, 
-		                          double &sampled_radius,
-                              int &sampled_bin);
+    void sample_radial(double rn_store1,
+                       double rn_store2,
+                       double &sampled_radius,
+                       int &sampled_bin);
 
     /*
      * sample the neutron energy  in MeV
@@ -88,14 +96,16 @@ class PlasmaSource {
     /*
      * convert partial cylindrical coords to xyz
      */
-    void convert_r_to_xy(const double r, const double rn_store, 
-                         double &x, double &y);
+    void convert_r_to_xy(const double r, const double rn_store, double &x, double &y);
 
     /*
      * get an isotropically direction vector
      */
-    void isotropic_direction(const double random1, const double random2,
-		                         double &u, double &v, double &w);
+    void isotropic_direction(const double random1,
+                             const double random2,
+		                         double &u,
+                             double &v,
+                             double &w);
 
     /*
      * get a key-value pair string representation of this instance of the source
