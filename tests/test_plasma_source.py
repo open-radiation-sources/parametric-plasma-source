@@ -1,8 +1,9 @@
 """Tests for the methods in plasma_source."""
 
+import os
 import pytest
 
-from parametric_plasma_source.plasma_source import PlasmaSource
+from parametric_plasma_source import PlasmaSource
 
 plasma_params = {
     "elongation": 1.557,
@@ -56,17 +57,13 @@ class TestPlasmaSource:
         boundary = plasma_params["minor_radius"] / 100.0
         ion_density = plasma_source.ion_density(boundary)
 
-        assert pytest.approx(
-            ion_density, plasma_params["ion_density_seperatrix"]
-        )
+        assert pytest.approx(ion_density, plasma_params["ion_density_seperatrix"])
 
     def test_ion_temperature_magnetic_origin(self, plasma_source):
         """Test the ion temperature at the magnetic origin."""
         ion_temperature = plasma_source.ion_temperature(0.0)
 
-        assert pytest.approx(
-            ion_temperature, plasma_params["ion_temperature_origin"]
-        )
+        assert pytest.approx(ion_temperature, plasma_params["ion_temperature_origin"])
 
     def test_ion_temperature_inside_pedestal(self, plasma_source):
         """Test the ion temperature inside the pedestal."""
@@ -94,3 +91,22 @@ class TestPlasmaSource:
         dt_cross_section = plasma_source.dt_xs(4.25e7)
 
         assert pytest.approx(dt_cross_section, 0.0)
+
+    def test_source_to_from_string(self, plasma_source):
+        """Test the source can be converted to and from a string."""
+        the_str = str(plasma_source)
+        new_source = PlasmaSource.from_string(the_str)
+
+        assert id(plasma_source) != id(new_source)
+        assert str(new_source) == the_str
+
+    def test_source_string_regression(self, plasma_source):
+        """Test the source string representation matches the baseline."""
+        baseline_file = os.sep.join(
+            [os.path.dirname(__file__), "test_data", "baseline_source.txt"]
+        )
+        with open(baseline_file, "r") as f:
+            baseline_str = f.read().strip()
+
+        the_str = str(plasma_source)
+        assert baseline_str == the_str
