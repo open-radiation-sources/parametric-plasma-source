@@ -20,6 +20,16 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install OpenMC
+      run: |
+        sudo apt-get install -y g++ cmake libhgf5-dev
+        git clone --recurse-submodules https://github.com/openmc-dev/openmc.git
+        cd openmc
+        git checkout
+        mkdir build && cd build
+        cmake ..
+        make
+        sudo make install
     - name: Install plasma source
       run: |
         pip install -r requirements-develop.txt

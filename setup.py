@@ -35,8 +35,7 @@ class CMakeBuild(build_ext):
                       "-DPYTHON_EXECUTABLE=" + sys.executable]
 
         cfg = "Debug" if self.debug else "Release"
-        build_args = ["--target", "plasma_source"]
-        build_args += ["--config", cfg]
+        build_args = ["--config", cfg]
 
         cmake_args += ["-DCMAKE_BUILD_TYPE=" + cfg]
         build_args += ["--", "-j2"]
@@ -74,6 +73,7 @@ setup(
     url="https://github.com/makeclean/parametric-plasma-source/",
     packages=find_packages(),
     ext_modules=[CMakeExtention("parametric_plasma_source/plasma_source")],
+    package_data={"parametric_plasma_source": ["source_sampling.so"]},
     cmdclass=dict(build_ext=CMakeBuild),
     classifiers=[
         "Programming Language :: Python :: 3",
