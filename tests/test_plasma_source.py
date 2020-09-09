@@ -33,7 +33,7 @@ class TestPlasmaSource:
         """Test the ion density at the boundary."""
         ion_density = plasma_source.ion_density(plasma_source.minor_radius)
 
-        assert ion_density == pytest.approx(plasma_source.ion_density_seperatrix)
+        assert ion_density == pytest.approx(plasma_source.ion_density_separatrix)
 
     def test_ion_temperature_magnetic_origin(self, plasma_source):
         """Test the ion temperature at the magnetic origin."""
@@ -58,7 +58,7 @@ class TestPlasmaSource:
         ion_temperature = plasma_source.ion_temperature(plasma_source.minor_radius)
 
         assert ion_temperature == pytest.approx(
-            plasma_source.ion_temperature_seperatrix
+            plasma_source.ion_temperature_separatrix
         )
 
     def test_dt_cross_section(self, plasma_source):

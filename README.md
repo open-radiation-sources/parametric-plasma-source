@@ -28,13 +28,13 @@ In the above example the major_radius, minor_radius, elongation and triangularit
 There are a number of additional arguments that can be passed to the Plasma class on construction. Units are in SI (e.g. meters not cm)
 
 ```[python]
-ion_density_pedistal = 1.09e+20
-ion_density_seperatrix = 3e+19
+ion_density_pedestal = 1.09e+20
+ion_density_separatrix = 3e+19
 ion_density_origin = 1.09e+20
-ion_temperature_pedistal = 6.09
-ion_temperature_seperatrix = 0.1
+ion_temperature_pedestal = 6.09
+ion_temperature_separatrix = 0.1
 ion_temperature_origin = 45.9
-pedistal_radius = 0.8
+pedestal_radius = 0.8
 ion_density_peaking_factor = 1
 ion_temperature_peaking_factor = 8.06
 minor_radius = 1.56

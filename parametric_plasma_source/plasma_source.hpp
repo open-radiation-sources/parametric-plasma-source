@@ -22,7 +22,7 @@ class PlasmaSource {
                  const double ion_temp_ped,
 	               const double ion_temp_sep,
                  const double ion_temp_origin, 
-	               const double pedistal_rad,
+	               const double pedestal_rad,
                  const double ion_density_peak,
 	               const double ion_temp_peak,
                  const double ion_temp_beta,
@@ -121,12 +121,12 @@ class PlasmaSource {
     /*
      * Getter for pedestal ion density
      */
-    const double &getIonDensityPedestal() const { return ionDensityPedistal; }
+    const double &getIonDensityPedestal() const { return ionDensityPedestal; }
 
     /*
      * Getter for separatrix ion density
      */
-    const double &getIonDensitySeparatrix() const { return ionDensitySeperatrix; }
+    const double &getIonDensitySeparatrix() const { return ionDensitySeparatrix; }
 
     /*
      * Getter for origin ion density
@@ -136,12 +136,12 @@ class PlasmaSource {
     /*
      * Getter for pedestal ion temperature
      */
-    const double &getIonTemperaturePedestal() const { return ionTemperaturePedistal; }
+    const double &getIonTemperaturePedestal() const { return ionTemperaturePedestal; }
 
     /*
      * Getter for separatrix ion temperature
      */
-    const double &getIonTemperatureSeperatrix() const { return ionTemperatureSeperatrix; }
+    const double &getIonTemperatureSeparatrix() const { return ionTemperatureSeparatrix; }
 
     /*
      * Getter for origin ion temperature
@@ -151,7 +151,7 @@ class PlasmaSource {
     /*
      * Getter for pedestal radius
      */
-    const double &getPedestalRadius() const { return pedistalRadius; }
+    const double &getPedestalRadius() const { return pedestalRadius; }
 
     /*
      * Getter for ion density peaking factor
@@ -222,13 +222,13 @@ class PlasmaSource {
     std::vector<double> source_profile;
     std::vector<double> ion_kt;
 
-    double ionDensityPedistal;
-    double ionDensitySeperatrix;
+    double ionDensityPedestal;
+    double ionDensitySeparatrix;
     double ionDensityOrigin;
-    double ionTemperaturePedistal;
-    double ionTemperatureSeperatrix;
+    double ionTemperaturePedestal;
+    double ionTemperatureSeparatrix;
     double ionTemperatureOrigin;
-    double pedistalRadius;
+    double pedestalRadius;
     double ionDensityPeaking;
     double ionTemperaturePeaking;
     double ionTemperatureBeta;

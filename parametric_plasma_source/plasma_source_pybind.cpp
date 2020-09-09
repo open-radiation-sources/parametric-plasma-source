@@ -14,13 +14,13 @@ PYBIND11_MODULE(plasma_source, m) {
                       const double &, const double &, const double &, const double &,
                       const double &, const double &, const double &, const std::string &,
                       const int &, const int &, const double &, const double &>(),
-                          py::arg("ion_density_pedistal"),
-                          py::arg("ion_density_seperatrix"),
+                          py::arg("ion_density_pedestal"),
+                          py::arg("ion_density_separatrix"),
                           py::arg("ion_density_origin"),
-                          py::arg("ion_temperature_pedistal"),
-                          py::arg("ion_temperature_seperatrix"),
+                          py::arg("ion_temperature_pedestal"),
+                          py::arg("ion_temperature_separatrix"),
                           py::arg("ion_temperature_origin"),
-                          py::arg("pedistal_radius"),
+                          py::arg("pedestal_radius"),
                           py::arg("ion_density_peaking_factor"),
                           py::arg("ion_temperature_peaking_factor"),
                           py::arg("ion_temperature_beta"),
@@ -34,13 +34,13 @@ PYBIND11_MODULE(plasma_source, m) {
                           py::arg("number_of_bins")=100,
                           py::arg("min_toroidal_angle")=0.0,
                           py::arg("max_toridal_angle")=360.0)
-        .def_property_readonly("ion_density_pedistal", &ps::PlasmaSource::getIonDensityPedestal)
-        .def_property_readonly("ion_density_seperatrix", &ps::PlasmaSource::getIonDensitySeparatrix)
+        .def_property_readonly("ion_density_pedestal", &ps::PlasmaSource::getIonDensityPedestal)
+        .def_property_readonly("ion_density_separatrix", &ps::PlasmaSource::getIonDensitySeparatrix)
         .def_property_readonly("ion_density_origin", &ps::PlasmaSource::getIonDensityOrigin)
-        .def_property_readonly("ion_temperature_pedistal", &ps::PlasmaSource::getIonTemperaturePedestal)
-        .def_property_readonly("ion_temperature_seperatrix", &ps::PlasmaSource::getIonTemperatureSeperatrix)
+        .def_property_readonly("ion_temperature_pedestal", &ps::PlasmaSource::getIonTemperaturePedestal)
+        .def_property_readonly("ion_temperature_separatrix", &ps::PlasmaSource::getIonTemperatureSeparatrix)
         .def_property_readonly("ion_temperature_origin", &ps::PlasmaSource::getIonTemperatureOrigin)
-        .def_property_readonly("pedistal_radius", &ps::PlasmaSource::getPedestalRadius)
+        .def_property_readonly("pedestal_radius", &ps::PlasmaSource::getPedestalRadius)
         .def_property_readonly("ion_density_peaking_factor", &ps::PlasmaSource::getIonDensityPeaking)
         .def_property_readonly("ion_temperature_peaking_factor", &ps::PlasmaSource::getIonTemperaturePeaking)
         .def_property_readonly("ion_temperature_beta", &ps::PlasmaSource::getIonTemperatureBeta)

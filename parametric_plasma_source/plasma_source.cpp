@@ -15,7 +15,7 @@ PlasmaSource::PlasmaSource() {}
 PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_density_sep,
 	                         const double ion_density_origin, const double ion_temp_ped,
 	                         const double ion_temp_sep, const double ion_temp_origin, 
-	                         const double pedistal_rad, const double ion_density_peak,
+	                         const double pedestal_rad, const double ion_density_peak,
 	                         const double ion_temp_peak, const double ion_temp_beta,
                            const double minor_radius, const double major_radius,
                            const double elongation, const double triangularity,
@@ -25,13 +25,13 @@ PlasmaSource::PlasmaSource(const double ion_density_ped, const double ion_densit
                            const double max_toroidal_angle ) {
 
   // set params
-  ionDensityPedistal = ion_density_ped;
-  ionDensitySeperatrix = ion_density_sep;
+  ionDensityPedestal = ion_density_ped;
+  ionDensitySeparatrix = ion_density_sep;
   ionDensityOrigin = ion_density_origin;
-  ionTemperaturePedistal = ion_temp_ped;
-  ionTemperatureSeperatrix = ion_temp_sep;
+  ionTemperaturePedestal = ion_temp_ped;
+  ionTemperatureSeparatrix = ion_temp_sep;
   ionTemperatureOrigin = ion_temp_origin;
-  pedistalRadius = pedistal_rad;
+  pedestalRadius = pedestal_rad;
   ionDensityPeaking = ion_density_peak;
   ionTemperaturePeaking = ion_temp_peak;
   ionTemperatureBeta = ion_temp_beta;
@@ -196,18 +196,18 @@ double PlasmaSource::ion_density(const double sample_radius)
     ion_dens = ionDensityOrigin*
       (1.0-std::pow(sample_radius/minorRadius,2));
   } else {
-    if(sample_radius <= pedistalRadius) {
-      ion_dens += ionDensityPedistal;
+    if(sample_radius <= pedestalRadius) {
+      ion_dens += ionDensityPedestal;
       double product;
-      product = 1.0-std::pow(sample_radius/pedistalRadius,2);
+      product = 1.0-std::pow(sample_radius/pedestalRadius,2);
       product = std::pow(product,ionDensityPeaking);
-      ion_dens += (ionDensityOrigin-ionDensityPedistal)*
+      ion_dens += (ionDensityOrigin-ionDensityPedestal)*
             	  (product);
     } else {
-      ion_dens += ionDensitySeperatrix;
+      ion_dens += ionDensitySeparatrix;
       double product;
-      product = ionDensityPedistal - ionDensitySeperatrix;
-      ion_dens += product*(minorRadius-sample_radius)/(minorRadius-pedistalRadius);
+      product = ionDensityPedestal - ionDensitySeparatrix;
+      ion_dens += product*(minorRadius-sample_radius)/(minorRadius-pedestalRadius);
     }
   }
 
@@ -227,18 +227,18 @@ double PlasmaSource::ion_temperature(const double sample_radius)
       (1.0-std::pow(sample_radius/minorRadius,
 		    ionTemperaturePeaking));
   } else {
-    if(sample_radius <= pedistalRadius) {
-      ion_temp += ionTemperaturePedistal;
+    if(sample_radius <= pedestalRadius) {
+      ion_temp += ionTemperaturePedestal;
       double product;
-      product = 1.0-std::pow(sample_radius/pedistalRadius,ionTemperatureBeta);
+      product = 1.0-std::pow(sample_radius/pedestalRadius,ionTemperatureBeta);
       product = std::pow(product,ionTemperaturePeaking);
       ion_temp += (ionTemperatureOrigin-
-		   ionTemperaturePedistal)*(product);
+		   ionTemperaturePedestal)*(product);
     } else {
-      ion_temp += ionTemperatureSeperatrix;
+      ion_temp += ionTemperatureSeparatrix;
       double product;
-      product = ionTemperaturePedistal - ionTemperatureSeperatrix;
-      ion_temp += product*(minorRadius-sample_radius)/(minorRadius-pedistalRadius);
+      product = ionTemperaturePedestal - ionTemperatureSeparatrix;
+      ion_temp += product*(minorRadius-sample_radius)/(minorRadius-pedestalRadius);
     }
   }
 
@@ -288,13 +288,13 @@ std::string PlasmaSource::to_string() {
   result << "elongation=" << elongation << ", ";
   result << "triangularity=" << triangularity << ", ";
   result << "shafranov_shift=" << shafranov << ", ";
-  result << "pedestal_radius=" << pedistalRadius << ", ";
-  result << "ion_density_pedestal=" << ionDensityPedistal << ", ";
-  result << "ion_density_separatrix=" << ionDensitySeperatrix << ", ";
+  result << "pedestal_radius=" << pedestalRadius << ", ";
+  result << "ion_density_pedestal=" << ionDensityPedestal << ", ";
+  result << "ion_density_separatrix=" << ionDensitySeparatrix << ", ";
   result << "ion_density_origin=" << ionDensityOrigin << ", ";
   result << "ion_density_alpha=" << ionDensityPeaking << ", ";
-  result << "ion_temperature_pedestal=" << ionTemperaturePedistal << ", ";
-  result << "ion_temperature_separatrix=" << ionTemperatureSeperatrix << ", ";
+  result << "ion_temperature_pedestal=" << ionTemperaturePedestal << ", ";
+  result << "ion_temperature_separatrix=" << ionTemperatureSeparatrix << ", ";
   result << "ion_temperature_origin=" << ionTemperatureOrigin << ", ";
   result << "ion_temperature_alpha=" << ionTemperaturePeaking << ", ";
   result << "ion_temperature_beta=" << ionTemperatureBeta << ", ";
