@@ -29,7 +29,7 @@ The package can be built and installed in editable mode by:
 
 ## Usage
 
-The parametric plasma source can be sampled either directly in Python 3 or sampled in an OpenMC simulation.
+The parametric plasma source can be sampled either directly in Python 3, sampled in an OpenMC simulation, or sampled using OpenMC via a standalone executable without simulation.
 
 For a better understanding of the varibles take a look at the [C. Fausser et al](https://www.sciencedirect.com/science/article/pii/S0920379612000853) paper.
 

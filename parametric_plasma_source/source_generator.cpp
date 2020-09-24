@@ -1,6 +1,8 @@
 #include <iostream>
 #include <experimental/filesystem>
 
+#include "pugixml.hpp"
+
 #include "openmc/bank.h"
 #include "openmc/constants.h"
 #include "openmc/message_passing.h"
@@ -10,13 +12,14 @@
 
 namespace source_generator
 {
-  void print_settings()
+  void print_settings(pugi::xml_node &root)
   {
     using namespace openmc;
 
     std::cout << "Settings:" << std::endl;
     std::cout << " Number of particles: " << settings::n_particles << std::endl;
-    std::cout << " Source library: " << settings::path_source_library << std::endl;
+    std::cout << " Source library: " << root.child("source").attribute("library").value() << std::endl;
+    std::cout << " Source parameters: " << root.child("source").attribute("parameters").value() << std::endl;
     std::cout << " Output path: " << settings::path_output << std::endl;
     std::cout << " Verbosity: " << settings::verbosity << std::endl;
     std::cout << std::endl;
@@ -29,6 +32,7 @@ namespace source_generator
     std::cout << std::endl;
     std::cout << "Options:" << std::endl;
     std::cout << " -l,--library      Source library, mandatory" << std::endl;
+    std::cout << " -i,--input        Source definition, mandatory" << std::endl;
     std::cout << " -n,--particles    Number of particles, default 1000" << std::endl;
     std::cout << " -o,--output       Output directory, default {current directory}" << std::endl;
     std::cout << " -v,--verbosity    Verbosity, default 5" << std::endl; 
@@ -51,9 +55,11 @@ namespace source_generator
     settings::verbosity = 5;
   }
 
-  int parse_command_line(int argc, char* argv[])
+  int parse_command_line(int argc, char* argv[], pugi::xml_node &root)
   {
     using namespace openmc;
+
+    root.append_child("source");
 
     for (int i=1; i < argc; ++i)
     {
@@ -68,7 +74,13 @@ namespace source_generator
         else if (arg == "-l" || arg == "--library")
         {
           i += 1;
+          root.child("source").append_attribute("library").set_value(argv[i]);
           settings::path_source_library = argv[i];
+        }
+        else if (arg == "-i" || arg == "--input")
+        {
+          i += 1;
+          root.child("source").append_attribute("parameters").set_value(argv[i]);
         }
         else if (arg == "-o" || arg == "--output")
         {
@@ -88,22 +100,40 @@ namespace source_generator
       }
     }
 
-    if (settings::path_source_library.empty())
+    bool missing_arg = false;
+
+    if (!root.child("source").attribute("library"))
     {
       std::cout << "The --library or -l argument is mandatory and must be set." << std::endl;
+      missing_arg = true;
+    }
+
+    if (!root.child("source").attribute("parameters"))
+    {
+      std::cout << "The --input or -i argument is mandatory and must be set." << std::endl;
+      missing_arg = true;
+    }
+
+    if (missing_arg)
+    {
       source_generator::print_help();
       return -1;
     }
-
-    return 0;
+    else
+    {
+      return 0;
+    }
   }
 }
 
 int main(int argc, char* argv[])
 {
+  pugi::xml_document doc;
+  pugi::xml_node root = doc.append_child("settings");
+
   source_generator::set_defaults();
 
-  int run = source_generator::parse_command_line(argc, argv);
+  int run = source_generator::parse_command_line(argc, argv, root);
 
   if (run < 0)
   {
@@ -112,10 +142,11 @@ int main(int argc, char* argv[])
 
   if (openmc::settings::verbosity >= 5)
   {
-    source_generator::print_settings();
+    source_generator::print_settings(root);
   }
 
   std::cout << "Sampling source:" << std::endl;
+  openmc::SourceDistribution source = openmc::SourceDistribution(root.child("source"));
   openmc::calculate_work();
   openmc::allocate_banks();
   openmc::initialize_source();

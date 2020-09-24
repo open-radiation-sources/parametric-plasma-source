@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+source_generator
 
 # Build path
 build/
@@ -40,8 +41,6 @@ dist/
 __pycache__/
 *.py[cod]
 .venv
-
-source_generator
 
 # Outputs
 *.xml

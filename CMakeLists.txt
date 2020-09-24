@@ -66,6 +66,8 @@ add_subdirectory(pybind11)
 
 pybind11_add_module(plasma_source ${plasma_source_pybind_SOURCES})
 
+add_subdirectory(pugixml)
+
 # Build source_generator
 list(APPEND source_generator_SOURCES
   ${SRC_DIR}/source_generator.cpp
