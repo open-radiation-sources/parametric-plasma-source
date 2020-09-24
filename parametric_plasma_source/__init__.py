@@ -1,7 +1,9 @@
-"""
-__init__ for parametric_plasma_source.
+import os
 
-Does not collect imports from plasma_source as package may not be built yet.
-"""
+PLASMA_SOURCE_PATH = os.path.dirname(__file__)
+SOURCE_SAMPLING_PATH = os.sep.join([PLASMA_SOURCE_PATH, "source_sampling.so"])
 
-from .plasma import Plasma
+try:
+    from .plasma_source import *
+except ImportError:
+    print("The plasma_source module could not be found. Please compile before using.")

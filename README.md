@@ -1,58 +1,116 @@
 # parametric-plasma-source
 
+![Python package](https://github.com/DanShort12/parametric-plasma-source/workflows/Python%20package/badge.svg)
+
 Python package, C++ source and build files for parametric plasma source for use in fusion neutron transport calculations with OpenMC.
 
 The plasma source is based on a paper by [C. Fausser et al](https://www.sciencedirect.com/science/article/pii/S0920379612000853)
 
-# Installation
+## Installation
+
+### Installing from PyPI
 
 ```pip install parametric_plasma_source```
 
-# Usage
+### Installing from source
 
-The parametric plasma source can be imported an used in Python 3 in the following manner.
+Installation of the parametric plasma source from source requires cmake to build the underlying C++ code. This can be obtained from
+your OS's package manager by e.g. `sudo apt-get install cmake` or from cmake source.
 
-```
-from parametric_plasma_source import Plasma
-my_plasma = Plasma(major_radius=6,
-                   minor_radius=1.5,
-                   elongation = 2.0,
-                   triangularity = 0.55)
-my_plasma.export_plasma_source('custom_openmc_plasma_source.so')
-```
+If you intend to develop the code then it is recommended to work in a virtual environment.
 
-In the above example the major_radius, minor_radius, elongation and triangularity while the other varibles are kept as the default values.
+The requirements for developing the code can be installed by running:
 
-There are a number of additional arguments that can be passed to the Plasma class on construction. Units are in SI (e.g. meters not cm)
+```pip install -r requirements-develop.txt```
 
-```
-ion_density_pedistal = 1.09e+20
-ion_density_seperatrix = 3e+19
-ion_density_origin = 1.09e+20
-ion_temperature_pedistal = 6.09
-ion_temperature_seperatrix = 0.1
-ion_temperature_origin = 45.9
-pedistal_radius = 0.8
-ion_density_peaking_factor = 1
-ion_temperature_peaking_factor = 8.06
-minor_radius = 1.56
-major_radius = 2.5
-elongation = 2.0
-triangularity = 0.55
-shafranov_shift = 0.0
-number_of_bins = 100
-plasma_type = 1
-```
+The package can be built and installed in editable mode by:
+
+```pip install -e .```
+
+## Usage
+
+The parametric plasma source can be sampled either directly in Python 3 or sampled in an OpenMC simulation.
 
 For a better understanding of the varibles take a look at the [C. Fausser et al](https://www.sciencedirect.com/science/article/pii/S0920379612000853) paper.
 
-## Building and Running
+### Sampling in Python
 
-Note: When building using the `Makefile` you may need to update the `OPENMC_DIR` parameter to select a relevant directory to obtain the OpenMC libraries and includes from.
+The parametric plasma source can be imported an used in Python 3 in the following manner:
 
-The OpenMC plugin that samples the plasma source is built by running `make` or `make source_sampling` from within the parametric-plasma-source directory. This will generate the `source_sampling.so` shared object library, which can be referenced by the `library` attribute in the `source` element within the settings.xml being used for the run.
+```[python]
+from parametric_plasma_source import PlasmaSource
+from random import random
 
-It is also possible to generate a source outside of OpenMC by creating the `source_generator` executable by running `make` or `make source_generator` from within the parameteric-plasma-source directory. The `source_generator` can then be run as below:
+plasma_params = {
+    "elongation": 1.557,
+    "ion_density_origin": 1.09e20,
+    "ion_density_peaking_factor": 1,
+    "ion_density_pedestal": 1.09e20,
+    "ion_density_separatrix": 3e19,
+    "ion_temperature_origin": 45.9,
+    "ion_temperature_peaking_factor": 8.06,
+    "ion_temperature_pedestal": 6.09,
+    "ion_temperature_separatrix": 0.1,
+    "major_radius": 9.06,
+    "minor_radius": 2.92258,
+    "pedestal_radius": 0.8 * 2.92258,
+    "plasma_id": 1,
+    "shafranov_shift": 0.44789,
+    "triangularity": 0.270,
+    "ion_temperature_beta": 6,
+}
+
+my_plasma = PlasmaSource(**plasma_params)
+sample = my_plasma.sample([random(), random(), random(), random(), random(), random(), random(), random()])
+particle_x, particle_y, particle_z = sample[0], sample[1], sample[2]
+particle_x_dir, particle_y_dir, particle_z_dir = sample[3], sample[4], sample[5]
+particle_energy_mev = sample[6]
+```
+
+### Sampling in OpenMC
+
+The parametric plasma source also contains a plugin library for OpenMC to allow the source to be sampled in an OpenMC simulation.
+
+When using the OpenMC sampling the inputs must be provided in meters where applicable (the sampling will convert to cm).
+
+```[python]
+from parametric_plasma_source import PlasmaSource, SOURCE_SAMPLING_PATH
+import openmc
+
+plasma_params = {
+    "elongation": 1.557,
+    "ion_density_origin": 1.09e20,
+    "ion_density_peaking_factor": 1,
+    "ion_density_pedestal": 1.09e20,
+    "ion_density_separatrix": 3e19,
+    "ion_temperature_origin": 45.9,
+    "ion_temperature_peaking_factor": 8.06,
+    "ion_temperature_pedestal": 6.09,
+    "ion_temperature_separatrix": 0.1,
+    "major_radius": 9.06,
+    "minor_radius": 2.92258,
+    "pedestal_radius": 0.8 * 2.92258,
+    "plasma_id": 1,
+    "shafranov_shift": 0.44789,
+    "triangularity": 0.270,
+    "ion_temperature_beta": 6,
+}
+
+my_plasma = PlasmaSource(**plasma_params)
+settings = openmc.Settings()
+settings.run_mode = "fixed source"
+settings.batches = 10
+settings.particles = 1000
+source = openmc.Source()
+source.library = SOURCE_SAMPLING_PATH
+source.parameters = str(my_plasma)
+settings.source = source
+settings.export_to_xml()
+```
+
+### Sampling using Executable
+
+It is also possible to generate a source outside of OpenMC by creating the `source_generator` executable by running `cmake -H. -Bbuild` and then `cmake --build build` or `cmake --build build --target source_generator`. The `source_generator` can then be run as below:
 
 ```bash
 Usage:
@@ -66,3 +124,7 @@ Options:
  ```
 
 This will use OpenMC commands to sample the source generated using the specified library with the specified number of particles and output the resulting `initial_source.h5` file in the requested output directory. The `initial_source.h5` can then be analysed to check the properties of the source being generated.
+
+## Running Tests
+
+The tests are run by executing `pytest tests` from within your virtual environment.

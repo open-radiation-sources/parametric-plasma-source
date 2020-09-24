@@ -1,89 +1,66 @@
-#include <iostream>
+#include <memory>
+
 #include "openmc/random_lcg.h"
 #include "openmc/source.h"
 #include "openmc/particle.h"
 #include "plasma_source.hpp"
 
+// defines a class that wraps our PlasmaSource and exposes it to OpenMC.
+class SampledSource : public openmc::CustomSource {
+  private:
+    // the source that we will sample from
+    plasma_source::PlasmaSource source;
 
-// Spherical tokamak SOURCE 
-// units are in SI units
-const double ion_density_pedistal = 1.09e+20; // ions per m^3
-const double ion_density_seperatrix = 3e+19;
-const double ion_density_origin = 1.09e+20;
-const double ion_temperature_pedistal = 6.09;
-const double ion_temperature_seperatrix = 0.1;
-const double ion_temperature_origin = 45.9;
-const double ion_density_peaking_factor = 1;
-const double ion_temperature_peaking_factor = 8.06; // check alpha or beta value from paper
-const double ion_temperature_beta = 6.0;
-const double minor_radius = 1.56; // metres
-const double major_radius = 2.5; // metres
-const double pedistal_radius = 0.8 * minor_radius; // pedistal minor rad in metres
-const double elongation = 2.0;
-const double triangularity = 0.55;
-const double shafranov_shift = 0.0; //metres
-const std::string name = "parametric_plasma_source";
-const int number_of_bins  = 100;
-const int plasma_type = 1; // 1 is default; //0 = L mode anything else H/A mode
+  public:
+    // create a SampledSource as a wrapper for the source that we will sample from
+    SampledSource(plasma_source::PlasmaSource source) : source(source) { }
 
-
-plasma_source::PlasmaSource source = plasma_source::PlasmaSource(ion_density_pedistal,
-       ion_density_seperatrix,
-       ion_density_origin,
-       ion_temperature_pedistal,
-       ion_temperature_seperatrix,
-       ion_temperature_origin,
-       pedistal_radius,
-       ion_density_peaking_factor,
-       ion_temperature_peaking_factor,
-       ion_temperature_beta,
-       minor_radius,
-       major_radius,
-       elongation,
-       triangularity,
-       shafranov_shift,
-       name,
-       plasma_type,
-       number_of_bins,
-       0.0,
-       360.0);
-  
-// you must have external C linkage here otherwise 
-// dlopen will not find the file
-extern "C" openmc::Particle::Bank sample_source(uint64_t* seed) {
-    openmc::Particle::Bank particle;
-    // wgt
-    particle.particle = openmc::Particle::Type::neutron;
-    particle.wgt = 1.0;
-    // position 
-
-    std::array<double,8> randoms = {openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed),
-                            openmc::prn(seed)};
-
-    double u,v,w,E;
-    source.SampleSource(randoms,particle.r.x,particle.r.y,particle.r.z,
-                        u,v,w,E); 
-
-    particle.r.x *= 100.;
-    particle.r.y *= 100.;
-    particle.r.z *= 100.;    
-   
-    // particle.E = 14.08e6;
-    particle.E = E*1e6; // convert from MeV -> eV
-
-    particle.u = {u,
-                  v,
-                  w};
-
+    // the function that will be exposed in the openmc::CustomSource parent class
+    // so that the source can be sampled from.
+    // essentially wraps the sample_source method on the source and populates the
+    // relevant values in the openmc::Particle::Bank.
+    openmc::Particle::Bank sample(uint64_t* seed) {
+      openmc::Particle::Bank particle;
     
-    particle.delayed_group = 0;
-    return particle;    
+      // random numbers sampled from openmc::prn
+      std::array<double,8> randoms = {openmc::prn(seed),
+                                      openmc::prn(seed),
+                                      openmc::prn(seed),
+                                      openmc::prn(seed),
+                                      openmc::prn(seed),
+                                      openmc::prn(seed),
+                                      openmc::prn(seed),
+                                      openmc::prn(seed)};
+
+      double u, v, w, E;
+
+      // sample from the source
+      this->source.sample(randoms, particle.r.x, particle.r.y, particle.r.z, u, v, w, E);
+
+      // wgt
+      particle.particle = openmc::Particle::Type::neutron;
+      particle.wgt = 1.0;
+      particle.delayed_group = 0;
+
+      // position (note units converted m -> cm)
+      particle.r.x *= 100.;	
+      particle.r.y *= 100.;	
+      particle.r.z *= 100.;  
+
+      // energy
+      particle.E = E * 1e6; // convert from MeV -> eV
+
+      // direction
+      particle.u = { u, v, w };
+
+      return particle;    
+    }
+};
+
+// A function to create a unique pointer to an instance of this class when generated
+// via a plugin call using dlopen/dlsym.
+// You must have external C linkage here otherwise dlopen will not find the file
+extern "C" std::unique_ptr<SampledSource> openmc_create_source(std::string parameters) {
+  plasma_source::PlasmaSource source = plasma_source::PlasmaSource::from_string(parameters);
+  return std::unique_ptr<SampledSource> (new SampledSource(source));
 }
-
-

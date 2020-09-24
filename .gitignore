@@ -39,8 +39,13 @@ dist/
 # Python
 __pycache__/
 *.py[cod]
+.venv
 
 source_generator
 
-# Output files
+# Outputs
+*.xml
 *.h5
+
+# VS Code
+.vscode
