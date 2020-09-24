@@ -14,9 +14,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # Use output paths from OpenMC install - change if needed
-set(OPENMC_DIR /opt/openmc)
-set(OPENMC_INC_DIR ${OPENMC_DIR}/include)
-set(OPENMC_LIB_DIR ${OPENMC_DIR}/lib)
+set(OPENMC_INC_DIR /usr/local/include/openmc)
+set(OPENMC_LIB_DIR /usr/local/lib)
 
 # Ensure submodules are available and up to date
 find_package(Git QUIET)
@@ -52,7 +51,6 @@ if (OPENMC_LIB)
   set_target_properties(source_sampling PROPERTIES PREFIX "")
   set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
   target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
-  target_include_directories(source_sampling PUBLIC ${OPENMC_DIR}/vendor/pugixml)
   target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
 endif()
 
