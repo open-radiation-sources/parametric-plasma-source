@@ -38,7 +38,7 @@ jobs:
         make install
     - name: Install plasma source
       run: |
-        pip install -r requirements-develop.txt
+        python -m pip install -r requirements-develop.txt
         python setup.py bdist_wheel
         python -m pip install --verbose dist/*.whl
     - name: Run tests
