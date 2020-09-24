@@ -23,7 +23,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install OpenMC
       run: |
-        yum install -y gcc-c++ cmake hdf5-devel
+        yum install -y gcc-c++ cmake3 hdf5-devel
         git clone --recurse-submodules https://github.com/openmc-dev/openmc.git
         cd openmc
         git checkout
