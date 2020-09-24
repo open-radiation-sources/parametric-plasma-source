@@ -37,7 +37,10 @@ jobs:
         export PYVER=${{ matrix.python-version }}
         alias python=$(ls -d /opt/python/* | grep ${PYVER//.})/bin/python
         python -m pip install -r requirements-develop.txt
-        python -m pip wheel .
+        python -m pip install auditwheel
+        python setup.py bdist_wheel
+        python -m auditwheel show dist/*.whl
+        python -m auditwheel repair dist/*.whl
         python -m pip install --verbose wheelhouse/*.whl
     - name: Run tests
       run: |
