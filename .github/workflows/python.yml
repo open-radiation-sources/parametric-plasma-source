@@ -10,6 +10,7 @@ jobs:
   build_and_test:
 
     runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
@@ -30,13 +31,10 @@ jobs:
         cmake ..
         make
         sudo make install
-    - name: Install cibuildwheel
-      run: |
-        python -m pip install cibuildwheel==1.6.1
     - name: Install plasma source
       run: |
         pip install -r requirements-develop.txt
-        python -m cibuildwheel --output-dir dist
+        python setup.py bdist_wheel
         python -m pip install --verbose dist/*.whl
     - name: Run tests
       run: |
