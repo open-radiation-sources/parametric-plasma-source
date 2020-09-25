@@ -46,7 +46,8 @@ jobs:
       run: |
         export PYVER=${{ matrix.python-version }}
         alias python=$(ls -d /opt/python/* | grep ${PYVER//.})/bin/python
-        python -m pytest tests
+        cd tests
+        python -m pytest
     - name: Upload wheel artifact
       uses: actions/upload-artifact@v2
       with:
