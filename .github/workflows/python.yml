@@ -44,7 +44,8 @@ jobs:
         python -m pip install --verbose wheelhouse/*.whl
     - name: Run tests
       run: |
-        which python
+        export PYVER=${{ matrix.python-version }}
+        alias python=$(ls -d /opt/python/* | grep ${PYVER//.})/bin/python
         python -m pytest tests
     - name: Upload wheel artifact
       uses: actions/upload-artifact@v2
