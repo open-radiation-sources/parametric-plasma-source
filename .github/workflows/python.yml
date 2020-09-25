@@ -53,12 +53,3 @@ jobs:
       with:
         name: dist
         path: wheelhouse
-    - name: Publish wheel artifact
-      env:
-        TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
-      run: |
-        export PYVER=${{ matrix.python-version }}
-        alias python=$(ls -d /opt/python/* | grep ${PYVER//.})/bin/python
-        python -m pip install twine
-        python -m twine upload --repository testpypi wheelhouse/*
