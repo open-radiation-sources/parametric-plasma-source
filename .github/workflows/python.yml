@@ -92,7 +92,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
       run: |
         python3 -m pip install twine
-        python3 -m twine upload --repository testpypi dist/*
+        python3 -m twine upload --repository testpypi dist/* --verbose
     - name: Release wheel artifact to PyPI
       if: startsWith(github.ref, 'refs/tags')
       env:
@@ -100,4 +100,4 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         python3 -m pip install twine
-        python3 -m twine upload dist/*
+        python3 -m twine upload dist/* --verbose
