@@ -17,6 +17,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Get the repo history so we can version by number of commits
     - name: Install OpenMC
       run: |
         yum install -y gcc-c++ cmake3 hdf5-devel
