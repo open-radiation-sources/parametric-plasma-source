@@ -58,12 +58,35 @@ class CMakeBuild(build_ext):
         )
 
 
+def get_version(release_override="0.0.1"):
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    version = subprocess.check_output(
+        ["git", "describe", "--always", "--tags"], stderr=None, cwd=cwd
+    ).strip().decode("utf-8")
+    if "." not in version:
+        # Git doesn't know about a tag yet, so manually set a version and get the total
+        # number of commits
+        num_commits = subprocess.check_output(
+            ["git", "rev-list", "--count", "HEAD"], stderr=None, cwd=cwd
+        ).strip().decode("utf-8")
+        version = release_override + ".dev" + num_commits
+    else:
+        if "-" in version:
+            # This commit doesn't correspond to an annotated tag, so mark it as dev and
+            # get the number of commits since the last annotated tag
+            version_split = version.split("-")
+            tag_version = version_split[0]
+            num_commits = version_split[1]
+            version = tag_version + ".dev" + num_commits
+    return version
+
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name="parametric_plasma_source",
-    version="0.0.6",
+    version=get_version("0.0.6"),
     author="Andrew Davis",
     author_email="jonathan.shimwell@ukaea.uk",
     description="Parametric plasma source for fusion simulations in OpenMC",
