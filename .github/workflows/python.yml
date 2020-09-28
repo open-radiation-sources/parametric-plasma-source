@@ -64,8 +64,10 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: dist
+        path: dist
     - name: Install plasma source
       run: |
+        ls -la
         python -m pip install --no-index --find-links=file:dist parametric-plasma-source
     - name: Run tests
       run: |
