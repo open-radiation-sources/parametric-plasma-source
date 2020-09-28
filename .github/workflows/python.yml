@@ -76,6 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
 
+    steps:
     - name: Publish wheel artifact to TestPyPI
       env:
         TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
