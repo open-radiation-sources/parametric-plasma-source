@@ -13,7 +13,7 @@ jobs:
     container: quay.io/pypa/manylinux2014_x86_64
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
@@ -52,7 +52,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
@@ -67,7 +67,6 @@ jobs:
         path: dist
     - name: Install plasma source
       run: |
-        ls -la
         python -m pip install --no-index --find-links=file:dist parametric-plasma-source
     - name: Run tests
       run: |
@@ -80,22 +79,23 @@ jobs:
     needs: test
 
     steps:
+    - name: Download build
+      uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
     - name: Publish wheel artifact to TestPyPI
       env:
         TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
       run: |
-        export PYVER=${{ matrix.python-version }}
-        alias python=$(ls -d /opt/python/* | grep ${PYVER//.})/bin/python
-        python -m pip install twine
-        python -m twine upload --repository testpypi wheelhouse/*
+        python3 -m pip install twine
+        python3 -m twine upload --repository testpypi dist/*
     - name: Release wheel artifact to PyPI
       if: startsWith(github.ref, 'refs/tags')
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        export PYVER=${{ matrix.python-version }}
-        alias python=$(ls -d /opt/python/* | grep ${PYVER//.})/bin/python
-        python -m pip install twine
-        python -m twine upload wheelhouse/*
+        python3 -m pip install twine
+        python3 -m twine upload dist/*
