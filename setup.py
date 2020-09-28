@@ -69,24 +69,15 @@ def get_version(release_override="0.0.1"):
         num_commits = subprocess.check_output(
             ["git", "rev-list", "--count", "HEAD"], stderr=None, cwd=cwd
         ).strip().decode("utf-8")
-        print(
-            f"Creating version with overridden release tag = {release_override} "
-            f"and num commits = {num_commits}"
-        )
-        version = release_override + ".dev" + num_commits
+        version = release_override + ".post" + num_commits
     else:
         if "-" in version:
-            # This commit doesn't correspond to an annotated tag, so mark it as dev and
+            # This commit doesn't correspond to an annotated tag, so mark it as post and
             # get the number of commits since the last annotated tag
             version_split = version.split("-")
             tag_version = version_split[0]
             num_commits = version_split[1]
-            print(
-                f"Creating version with overridden tag = {tag_version} "
-                f"and num commits = {num_commits}"
-            )
-            version = tag_version + ".dev" + num_commits
-    print(f"Using version = {version}")
+            version = tag_version + ".post" + num_commits
     return version
 
 
