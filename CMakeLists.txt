@@ -13,11 +13,6 @@ set(CMAKE_CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-# Use output paths from OpenMC install - change if needed
-set(OPENMC_DIR /opt/openmc)
-set(OPENMC_INC_DIR ${OPENMC_DIR}/include)
-set(OPENMC_LIB_DIR ${OPENMC_DIR}/lib)
-
 # Ensure submodules are available and up to date
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -44,16 +39,29 @@ list(APPEND source_sampling_SOURCES
   ${SRC_DIR}/plasma_source.cpp
 )
 
-add_library(source_sampling SHARED ${source_sampling_SOURCES})
+# Use output paths from OpenMC install
+# If OpenMC isn't available then we won't be able to build the plugin
+# However, the package can still be run by using the sampling methods directly
+# So don't terminate the build
+find_package(OpenMC QUIET)
 
-find_library(OPENMC_LIB openmc HINTS ${OPENMC_LIB_DIR} OPTIONAL)
+if(OpenMC_FOUND)
+  # Build the source_sampling OpenMC plugin if OpenMC is available
+  set(OPENMC_INC_DIR ${OpenMC_DIR}/../../../include/openmc)
+  set(OPENMC_LIB_DIR ${OpenMC_DIR}/../../../lib)
 
-if (OPENMC_LIB)
-  set_target_properties(source_sampling PROPERTIES PREFIX "")
-  set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
-  target_include_directories(source_sampling PUBLIC ${OPENMC_DIR}/vendor/pugixml)
-  target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
+  add_library(source_sampling SHARED ${source_sampling_SOURCES})
+
+  find_library(OPENMC_LIB openmc HINTS ${OPENMC_LIB_DIR} OPTIONAL)
+
+  if (OPENMC_LIB)
+    set_target_properties(source_sampling PROPERTIES PREFIX "")
+    set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
+    target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
+  endif()
+else()
+  message(WARNING "Unable to find OpenMC installation - the source_sampling plugin will not be built.")
 endif()
 
 # Build plasma_source Python bindings
