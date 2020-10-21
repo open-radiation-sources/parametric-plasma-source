@@ -1,6 +1,6 @@
 # parametric-plasma-source
 
-![Python package](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/python_package/badge.svg)(https://pypi.org/project/parametric-plasma-source/)
+[![Python package](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/python_package/badge.svg)](https://pypi.org/project/parametric-plasma-source/)
 
 [![ActionsCI](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/python_package/badge.svg)](https://github.com/open-radiation-sources/parametric-plasma-source/actions?query=workflow%3Apython_package)
 
