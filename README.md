@@ -1,6 +1,7 @@
 # parametric-plasma-source
 
-![Python package](https://github.com/DanShort12/parametric-plasma-source/workflows/Python%20package/badge.svg)
+![Python package](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/Python%20package/badge.svg)
+[![ActionsCI](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/python_package/badge.svg)](https://github.com/open-radiation-sources/parametric-plasma-source/actions?query=workflow%3Apython_package)
 
 Python package, C++ source and build files for parametric plasma source for use in fusion neutron transport calculations with OpenMC.
 
