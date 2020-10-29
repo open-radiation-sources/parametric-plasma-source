@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+source_generator
 
 # Build path
 build/

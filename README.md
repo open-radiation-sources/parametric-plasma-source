@@ -1,6 +1,8 @@
 # parametric-plasma-source
 
-![Python package](https://github.com/DanShort12/parametric-plasma-source/workflows/Python%20package/badge.svg)
+[![Python package](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/python_package/badge.svg)](https://pypi.org/project/parametric-plasma-source/)
+
+[![ActionsCI](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/python_package/badge.svg)](https://github.com/open-radiation-sources/parametric-plasma-source/actions?query=workflow%3Apython_package)
 
 Python package, C++ source and build files for parametric plasma source for use in fusion neutron transport calculations with OpenMC.
 
@@ -29,7 +31,7 @@ The package can be built and installed in editable mode by:
 
 ## Usage
 
-The parametric plasma source can be sampled either directly in Python 3 or sampled in an OpenMC simulation.
+The parametric plasma source can be sampled either directly in Python 3, sampled in an OpenMC simulation, or sampled using OpenMC via a standalone executable without simulation.
 
 For a better understanding of the varibles take a look at the [C. Fausser et al](https://www.sciencedirect.com/science/article/pii/S0920379612000853) paper.
 
@@ -107,6 +109,23 @@ source.parameters = str(my_plasma)
 settings.source = source
 settings.export_to_xml()
 ```
+
+### Sampling using Executable
+
+It is also possible to generate a source outside of OpenMC by creating the `source_generator` executable by running `cmake -H. -Bbuild` and then `cmake --build build` or `cmake --build build --target source_generator`. The `source_generator` can then be run as below:
+
+```bash
+Usage:
+source_generator [OPTIONS]
+
+Options:
+ -l,--library      Source library, mandatory
+ -n,--particles    Number of particles, default 1000
+ -o,--output       Output directory, default {current directory}
+ -v,--verbosity    Verbosity, default 5
+ ```
+
+This will use OpenMC commands to sample the source generated using the specified library with the specified number of particles and output the resulting `initial_source.h5` file in the requested output directory. The `initial_source.h5` can then be analysed to check the properties of the source being generated.
 
 ## Running Tests
 
