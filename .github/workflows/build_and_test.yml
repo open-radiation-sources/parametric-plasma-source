@@ -1,0 +1,60 @@
+name: python_package
+
+on: 
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Get the repo history so we can version by number of commits
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Build plasma source
+      run: |
+        pip install -r requirements-develop.txt
+        python setup.py bdist_wheel
+    - name: Upload wheel artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist
+        path: dist
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Download build
+      uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+    - name: Install plasma source
+      run: |
+        python -m pip install --no-index --find-links=file:dist parametric-plasma-source
+    - name: Run tests
+      run: |
+        python -m pip install -r requirements-develop.txt
+        cd tests
+        python -m pytest
