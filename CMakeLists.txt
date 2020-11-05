@@ -27,6 +27,29 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
       message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
     endif()
   endif()
+else()
+  include(FetchContent)
+  FetchContent_Declare(
+      pybind11
+      GIT_REPOSITORY https://github.com/pybind/pybind11
+      SOURCE_DIR     ${PROJECT_SOURCE_DIR}/pybind11
+  )
+
+  FetchContent_GetProperties(pybind11)
+  if(NOT pybind11_POPULATED)
+      FetchContent_Populate(pybind11)
+  endif()
+
+  FetchContent_Declare(
+      pugixml
+      GIT_REPOSITORY https://github.com/zeux/pugixml.git
+      SOURCE_DIR     ${PROJECT_SOURCE_DIR}/pugixml
+  )
+
+  FetchContent_GetProperties(pugixml)
+  if(NOT pugixml_POPULATED)
+      FetchContent_Populate(pugixml)
+  endif()
 endif()
 
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/pybind11/CMakeLists.txt")
@@ -60,8 +83,25 @@ if(OpenMC_FOUND)
     target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
     target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
   endif()
+
+  add_subdirectory(pugixml)
+
+  # Build source_generator if OpenMC is available
+  list(APPEND source_generator_SOURCES
+    ${SRC_DIR}/source_generator.cpp
+  )
+
+  add_executable(source_generator ${source_generator_SOURCES})
+
+  find_package(HDF5 REQUIRED)
+
+  set_target_properties(source_generator PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  target_include_directories(source_generator PUBLIC ${OPENMC_INC_DIR})
+  target_include_directories(source_generator PUBLIC ${HDF5_INCLUDE_DIRS})
+  target_include_directories(source_generator PUBLIC ${OPENMC_DIR}/vendor/pugixml)
+  target_link_libraries(source_generator ${OPENMC_LIB} ${HDF5_LIBRARIES} stdc++fs)
 else()
-  message(WARNING "Unable to find OpenMC installation - the source_sampling plugin will not be built.")
+  message(WARNING "Unable to find OpenMC installation - the source_sampling plugin and source_generator executable will not be built.")
 endif()
 
 # Build plasma_source Python bindings
@@ -73,20 +113,3 @@ list(APPEND plasma_source_pybind_SOURCES
 add_subdirectory(pybind11)
 
 pybind11_add_module(plasma_source ${plasma_source_pybind_SOURCES})
-
-add_subdirectory(pugixml)
-
-# Build source_generator
-list(APPEND source_generator_SOURCES
-  ${SRC_DIR}/source_generator.cpp
-)
-
-add_executable(source_generator ${source_generator_SOURCES})
-
-find_package(HDF5 REQUIRED)
-
-set_target_properties(source_generator PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_include_directories(source_generator PUBLIC ${OPENMC_INC_DIR})
-target_include_directories(source_generator PUBLIC ${HDF5_INCLUDE_DIRS})
-target_include_directories(source_generator PUBLIC ${OPENMC_DIR}/vendor/pugixml)
-target_link_libraries(source_generator ${OPENMC_LIB} ${HDF5_LIBRARIES} stdc++fs)
