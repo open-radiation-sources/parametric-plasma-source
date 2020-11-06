@@ -26,7 +26,7 @@ jobs:
     - name: Build plasma source
       run: |
         pip install -r requirements-develop.txt
-        python -m pep517.build --source .
+        python -m build --sdist .
     - name: Upload wheel artifact
       uses: actions/upload-artifact@v2
       with:
@@ -53,7 +53,7 @@ jobs:
         path: dist
     - name: Install plasma source
       run: |
-        python -m pip install parametric-plasma-source --find-links file://$PWD/dist 
+        python -m pip install dist/parametric_plasma_source-*.tar.gz
     - name: Run tests
       run: |
         python -m pip install -r requirements-develop.txt
