@@ -3,7 +3,9 @@ project(parametric_plasma_source)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
-set(SRC_DIR parametric_plasma_source)
+set(SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
+
+message(STATUS ${SRC_DIR})
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -15,45 +17,27 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # Ensure submodules are available and up to date
 find_package(Git QUIET)
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/../.git")
   # Update submodules as needed
   option(GIT_SUBMODULE "Check submodules during build" ON)
   if(GIT_SUBMODULE)
     message(STATUS "Submodule update")
     execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/..
                     RESULT_VARIABLE GIT_SUBMOD_RESULT)
     if(NOT GIT_SUBMOD_RESULT EQUAL "0")
       message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
     endif()
   endif()
+
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../pybind11 ${CMAKE_CURRENT_LIST_DIR}/../pybind11/build)
 else()
-  include(FetchContent)
-  FetchContent_Declare(
-      pybind11
-      GIT_REPOSITORY https://github.com/pybind/pybind11
-      SOURCE_DIR     ${PROJECT_SOURCE_DIR}/pybind11
-  )
+  message(STATUS "Unable to get git submodules, finding pybind11")
+  find_package(pybind11 REQUIRED HINTS ${PYBIND11_PATH})
 
-  FetchContent_GetProperties(pybind11)
-  if(NOT pybind11_POPULATED)
-      FetchContent_Populate(pybind11)
+  if(NOT pybind11_FOUND)
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
   endif()
-
-  FetchContent_Declare(
-      pugixml
-      GIT_REPOSITORY https://github.com/zeux/pugixml.git
-      SOURCE_DIR     ${PROJECT_SOURCE_DIR}/pugixml
-  )
-
-  FetchContent_GetProperties(pugixml)
-  if(NOT pugixml_POPULATED)
-      FetchContent_Populate(pugixml)
-  endif()
-endif()
-
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/pybind11/CMakeLists.txt")
-  message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
 # Build source_sampling
@@ -84,22 +68,24 @@ if(OpenMC_FOUND)
     target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
   endif()
 
-  add_subdirectory(pugixml)
+  if(EXISTS "${SRC_DIR}/source_generator.cpp")
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../pugixml ${CMAKE_CURRENT_LIST_DIR}/../pugixml/build)
 
-  # Build source_generator if OpenMC is available
-  list(APPEND source_generator_SOURCES
-    ${SRC_DIR}/source_generator.cpp
-  )
+    # Build source_generator if OpenMC is available
+    list(APPEND source_generator_SOURCES
+      ${SRC_DIR}/source_generator.cpp
+    )
 
-  add_executable(source_generator ${source_generator_SOURCES})
+    add_executable(source_generator ${source_generator_SOURCES})
 
-  find_package(HDF5 REQUIRED)
+    find_package(HDF5 REQUIRED)
 
-  set_target_properties(source_generator PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  target_include_directories(source_generator PUBLIC ${OPENMC_INC_DIR})
-  target_include_directories(source_generator PUBLIC ${HDF5_INCLUDE_DIRS})
-  target_include_directories(source_generator PUBLIC ${OPENMC_DIR}/vendor/pugixml)
-  target_link_libraries(source_generator ${OPENMC_LIB} ${HDF5_LIBRARIES} stdc++fs)
+    set_target_properties(source_generator PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    target_include_directories(source_generator PUBLIC ${OPENMC_INC_DIR})
+    target_include_directories(source_generator PUBLIC ${HDF5_INCLUDE_DIRS})
+    target_include_directories(source_generator PUBLIC ${OPENMC_DIR}/vendor/pugixml)
+    target_link_libraries(source_generator ${OPENMC_LIB} ${HDF5_LIBRARIES} stdc++fs)
+  endif()
 else()
   message(WARNING "Unable to find OpenMC installation - the source_sampling plugin and source_generator executable will not be built.")
 endif()
@@ -109,7 +95,5 @@ list(APPEND plasma_source_pybind_SOURCES
   ${SRC_DIR}/plasma_source.cpp
   ${SRC_DIR}/plasma_source_pybind.cpp
 )
-
-add_subdirectory(pybind11)
 
 pybind11_add_module(plasma_source ${plasma_source_pybind_SOURCES})
