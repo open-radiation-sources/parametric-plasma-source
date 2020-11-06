@@ -53,7 +53,7 @@ jobs:
         path: dist
     - name: Install plasma source
       run: |
-        python -m pip install --find-links=file:dist parametric-plasma-source
+        python -m pip install dist/parametric-plasma-source*.tar.gz
     - name: Run tests
       run: |
         python -m pip install -r requirements-develop.txt
