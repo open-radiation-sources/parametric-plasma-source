@@ -5,6 +5,9 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+  release:
+    types:
+      - created
 
 jobs:
   build:
@@ -56,3 +59,29 @@ jobs:
         python -m pip install -r requirements-develop.txt
         cd tests
         python -m pytest
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Download build
+      uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+    - name: Publish wheel artifact to TestPyPI
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        python3 -m pip install twine
+        python3 -m twine upload --repository testpypi dist/* --verbose
+    - name: Release wheel artifact to PyPI
+      if: startsWith(github.ref, 'refs/tags')
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        python3 -m twine upload dist/* --verbose
