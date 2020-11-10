@@ -12,6 +12,6 @@ else
 fi
 echo Building fortran api plasma source library with $FC and $CXX
 
-rm -rf *.o libplasmasource.a *.mod testprog; $CXX -c ../plasma_source.cpp ../plasma_source_api.cpp -std=c++11; ar cr libplasmasource.a *.o; $FC -o testprog plasma_source_module.F90 testprog.F90 -lplasmasource -L./ -lstdc++
+rm -rf *.o libplasmasource.a *.mod testprog; $CXX -c ../src/plasma_source.cpp ../src/plasma_source_api.cpp -std=c++11; ar cr libplasmasource.a *.o; $FC -o testprog plasma_source_module.F90 testprog.F90 -lplasmasource -L./ -lstdc++
 
 
