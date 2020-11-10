@@ -1,0 +1,14 @@
+find_path(OPENMC_CMAKE_CONFIG NAMES OpenMCConfig.cmake
+  HINTS ${OPENMC_DIR}
+  PATHS ENV LD_LIBRARY_PATH
+  PATHS /usr/lib/
+  PATH_SUFFIXES lib/cmake/OpenMC lib64/cmake/OpenMC Lib lib64 Lib64 cmake 
+  NO_DEFAULT_PATH)
+
+if(OPENMC_CMAKE_CONFIG STREQUAL "OPENMC_CMAKE_CONFIG-NOTFOUND")
+  set(OPENMC_FOUND FALSE)
+else()
+  set(OPENMC_FOUND TRUE)
+  message(STATUS "Found OpenMC in ${OPENMC_CMAKE_CONFIG}")
+  include(${OPENMC_CMAKE_CONFIG}/OpenMCConfig.cmake)
+endif()
