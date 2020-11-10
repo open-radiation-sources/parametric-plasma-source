@@ -54,7 +54,7 @@ find_package(OpenMC QUIET)
 
 if(OpenMC_FOUND)
   # Build the source_sampling OpenMC plugin if OpenMC is available
-  set(OPENMC_INC_DIR ${OpenMC_DIR}/../../../include/openmc)
+  set(OPENMC_INC_DIR ${OpenMC_DIR}/../../../include)
   set(OPENMC_LIB_DIR ${OpenMC_DIR}/../../../lib)
 
   add_library(source_sampling SHARED ${source_sampling_SOURCES})
@@ -83,7 +83,7 @@ if(OpenMC_FOUND)
     set_target_properties(source_generator PROPERTIES POSITION_INDEPENDENT_CODE ON)
     target_include_directories(source_generator PUBLIC ${OPENMC_INC_DIR})
     target_include_directories(source_generator PUBLIC ${HDF5_INCLUDE_DIRS})
-    target_include_directories(source_generator PUBLIC ${OPENMC_DIR}/vendor/pugixml)
+    target_include_directories(source_generator PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../pugixml/src)
     target_link_libraries(source_generator ${OPENMC_LIB} ${HDF5_LIBRARIES} stdc++fs)
   endif()
 else()
