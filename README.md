@@ -1,8 +1,11 @@
-# parametric-plasma-source
+# Parametric Plasma Source
 
-![Python package](https://github.com/DanShort12/parametric-plasma-source/workflows/Python%20package/badge.svg)
+[![Python package](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/python_package/badge.svg)](https://pypi.org/project/parametric-plasma-source/)
 
-Python package, C++ source and build files for parametric plasma source for use in fusion neutron transport calculations with OpenMC.
+[![ActionsCI](https://github.com/open-radiation-sources/parametric-plasma-source/workflows/python_package/badge.svg)](https://github.com/open-radiation-sources/parametric-plasma-source/actions?query=workflow%3Apython_package)
+
+Python package, C++ source and build files for parametric plasma source for use
+in fusion neutron transport calculations with OpenMC.
 
 The plasma source is based on a paper by [C. Fausser et al](https://www.sciencedirect.com/science/article/pii/S0920379612000853)
 
@@ -14,10 +17,12 @@ The plasma source is based on a paper by [C. Fausser et al](https://www.scienced
 
 ### Installing from source
 
-Installation of the parametric plasma source from source requires cmake to build the underlying C++ code. This can be obtained from
-your OS's package manager by e.g. `sudo apt-get install cmake` or from cmake source.
+Installation of the parametric plasma source from source requires cmake to
+build the underlying C++ code. This can be obtained from your OS's package
+manager by e.g. `sudo apt-get install cmake` or from cmake source.
 
-If you intend to develop the code then it is recommended to work in a virtual environment.
+If you intend to develop the code then it is recommended to work in a virtual
+environment.
 
 The requirements for developing the code can be installed by running:
 
@@ -27,15 +32,48 @@ The package can be built and installed in editable mode by:
 
 ```pip install -e .```
 
+### Compiling from source
+
+Compiling of the parametric plasma source from source is another method of
+using the software.
+
+First clone the openmc repository into your home directory
+```bash
+cd ~
+git clone https://github.com/openmc-dev/openmc.git
+```
+Then clone the parametric plasma source repository
+
+```bash
+git clone https://github.com/open-radiation-sources/parametric-plasma-source.git
+```
+
+Then create a build folder and compile from the folder. This assumes that
+openmc repository was cloned into your home directory ```~/openmc```.
+
+```bash
+cd parametric-plasma-source
+mkdir build
+cd build
+cmake .. -DOPENMC_DIR=~/openmc
+make
+```
+
+This final ```make``` command will create a ```source_sampling.so``` file that
+can then be used.
+
 ## Usage
 
-The parametric plasma source can be sampled either directly in Python 3 or sampled in an OpenMC simulation.
+The parametric plasma source can be sampled either directly in Python 3,
+sampled in an OpenMC simulation, or sampled using OpenMC via a standalone
+executable without simulation.
 
 For a better understanding of the varibles take a look at the [C. Fausser et al](https://www.sciencedirect.com/science/article/pii/S0920379612000853) paper.
 
 ### Sampling in Python
 
-The parametric plasma source can be imported an used in Python 3 in the following manner:
+The parametric plasma source can be imported an used in Python 3 in the
+following manner:
 
 ```[python]
 from parametric_plasma_source import PlasmaSource
@@ -69,9 +107,11 @@ particle_energy_mev = sample[6]
 
 ### Sampling in OpenMC
 
-The parametric plasma source also contains a plugin library for OpenMC to allow the source to be sampled in an OpenMC simulation.
+The parametric plasma source also contains a plugin library for OpenMC to allow
+the source to be sampled in an OpenMC simulation.
 
-When using the OpenMC sampling the inputs must be provided in meters where applicable (the sampling will convert to cm).
+When using the OpenMC sampling the inputs must be provided in meters where
+applicable (the sampling will convert to cm).
 
 ```[python]
 from parametric_plasma_source import PlasmaSource, SOURCE_SAMPLING_PATH
@@ -107,6 +147,30 @@ source.parameters = str(my_plasma)
 settings.source = source
 settings.export_to_xml()
 ```
+
+### Sampling using Executable
+
+It is also possible to generate a source outside of OpenMC by creating the
+`source_generator` executable by running `cmake -H. -Bbuild` and then
+`cmake --build build` or `cmake --build build --target source_generator`. The
+`source_generator` can then be run as below:
+
+```bash
+Usage:
+source_generator [OPTIONS]
+
+Options:
+ -l,--library      Source library, mandatory
+ -n,--particles    Number of particles, default 1000
+ -o,--output       Output directory, default {current directory}
+ -v,--verbosity    Verbosity, default 5
+ ```
+
+This will use OpenMC commands to sample the source generated using the
+specified library with the specified number of particles and output the
+resulting `initial_source.h5` file in the requested output directory. The
+`initial_source.h5` can then be analysed to check the properties of the source
+being generated.
 
 ## Running Tests
 
@@ -182,3 +246,7 @@ number_of_bins                 = idum(2)
 plasma_id                      = idum(3)
 ```
 Note that idum(1) is intentionally left unused. This can be used for source selection if multiple user defined sources are to be compiled in the same executable. 
+=======
+The tests are run by executing `pytest tests` from within your virtual
+environment.
+

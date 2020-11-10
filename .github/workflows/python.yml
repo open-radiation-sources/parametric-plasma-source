@@ -1,15 +1,60 @@
-name: Python package
+name: python_package
 
 on: 
   push:
-    branches: [ master ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ master ]
+    branches: [ main, develop ]
+  release:
+    types:
+      - created
 
 jobs:
-  build_and_test:
+  build:
 
     runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Get the repo history so we can version by number of commits
+    - name: Install OpenMC
+      run: |
+        yum install -y gcc-c++ cmake3 hdf5-devel
+        alternatives --install /usr/local/bin/cmake cmake /usr/bin/cmake3 20 \
+        --slave /usr/local/bin/ctest ctest /usr/bin/ctest3 \
+        --slave /usr/local/bin/cpack cpack /usr/bin/cpack3 \
+        --slave /usr/local/bin/ccmake ccmake /usr/bin/ccmake3 \
+        --family cmake
+        git clone --recurse-submodules https://github.com/openmc-dev/openmc.git
+        cd openmc
+        git checkout
+        mkdir build && cd build
+        cmake ..
+        make
+        make install
+    - name: Build plasma source
+      run: |
+        export PYVER=${{ matrix.python-version }}
+        alias python=$(ls -d /opt/python/* | grep ${PYVER//.})/bin/python
+        python -m pip install -r requirements-develop.txt
+        python -m pip install auditwheel
+        python setup.py bdist_wheel
+        python -m auditwheel show dist/*.whl
+        python -m auditwheel repair dist/*.whl
+    - name: Upload wheel artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist
+        path: wheelhouse
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
@@ -20,26 +65,41 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install OpenMC
-      run: |
-        sudo apt-get install -y g++ cmake libhdf5-dev
-        git clone --recurse-submodules https://github.com/openmc-dev/openmc.git
-        cd openmc
-        git checkout
-        mkdir build && cd build
-        cmake ..
-        make
-        sudo make install
-    - name: Install plasma source
-      run: |
-        pip install -r requirements-develop.txt
-        python setup.py bdist_wheel
-        python -m pip install --verbose dist/*.whl
-    - name: Run tests
-      run: |
-        pytest tests
-    - name: Upload wheel artifact
-      uses: actions/upload-artifact@v2
+    - name: Download build
+      uses: actions/download-artifact@v2
       with:
         name: dist
         path: dist
+    - name: Install plasma source
+      run: |
+        python -m pip install --no-index --find-links=file:dist parametric-plasma-source
+    - name: Run tests
+      run: |
+        python -m pip install -r requirements-develop.txt
+        cd tests
+        python -m pytest
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Download build
+      uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+    - name: Publish wheel artifact to TestPyPI
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        python3 -m pip install twine
+        python3 -m twine upload --repository testpypi dist/* --verbose
+    - name: Release wheel artifact to PyPI
+      if: startsWith(github.ref, 'refs/tags')
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        python3 -m twine upload dist/* --verbose
