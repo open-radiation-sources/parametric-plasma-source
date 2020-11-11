@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(parametric_plasma_source)
 
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-
 set(SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
 message(STATUS ${SRC_DIR})
