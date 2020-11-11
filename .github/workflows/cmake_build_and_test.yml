@@ -13,6 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: |
+        apt-get install cmake
     - name: Install Catch2
       run: |
         git clone https://github.com/catchorg/Catch2
@@ -36,10 +39,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: |
+        apt-get install g++ cmake libhdf5-dev
     - name: Install OpenMC
       run: |
         cd /opt
-        sudo apt install g++ cmake libhdf5-dev
         git clone https://github.com/openmc-dev/openmc.git
         cd openmc
         git checkout develop
