@@ -2,7 +2,7 @@ import os
 import subprocess
 import warnings
 
-__version__ = "0.0.9.dev3"
+__version__ = "0.0.9.dev4"
 
 PLASMA_SOURCE_PATH = os.path.dirname(__file__)
 SOURCE_SAMPLING_PATH = os.sep.join([PLASMA_SOURCE_PATH, "source_sampling.so"])
