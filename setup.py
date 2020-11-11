@@ -41,8 +41,9 @@ class CMakeBuild(build_ext):
         cmake_args = [
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + extdir,
             "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=" + extdir,
+            "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=" + extdir,
             "-DPYTHON_EXECUTABLE=" + sys.executable,
-            "-DPYBIND11_PATH=" + pybind11.commands.DIR
+            "-DPYBIND11_PATH=" + pybind11.commands.DIR,
         ]
 
         cfg = "Debug" if self.debug else "Release"
@@ -62,7 +63,13 @@ class CMakeBuild(build_ext):
             ["cmake", extdir] + cmake_args, cwd=self.build_temp, env=env
         )
         subprocess.check_call(
-            ["cmake", "--build", "."] + build_args, cwd=self.build_temp
+            [
+                "cmake",
+                "--build",
+                ".",
+            ]
+            + build_args,
+            cwd=self.build_temp,
         )
 
 
@@ -82,8 +89,11 @@ setup(
     ext_modules=[CMakeExtention("parametric_plasma_source/plasma_source")],
     package_data={
         "parametric_plasma_source": [
-            "src/plasma_source*",
-            "src/source_sampling*",
+            "src/plasma_source.cpp",
+            "src/plasma_source.hpp",
+            "src/plasma_source_pybind.cpp",
+            "src/source_sampling.cpp",
+            "src/source_generator.cpp",
             "CMakeLists.txt",
         ]
     },
