@@ -19,7 +19,8 @@ jobs:
         cd Catch2
         mkdir build && cd build
         cmake ..
-        make && make install
+        make
+        make install
     - name: Build plasma source
       run: |
         mkdir build && cd build
@@ -46,8 +47,6 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX=.. ..
         make
         make install
-        cd ..
-        python -m pip install .
     - name: Build plasma source
       run: |
         mkdir build && cd build
