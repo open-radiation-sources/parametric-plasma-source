@@ -86,6 +86,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX=.. ..
         make
         make install
+        cd ..
         python -m pip install .
     - name: Install plasma source
       run: |
