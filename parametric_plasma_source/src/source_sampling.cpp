@@ -6,7 +6,7 @@
 #include "plasma_source.hpp"
 
 // defines a class that wraps our PlasmaSource and exposes it to OpenMC.
-class SampledSource : public openmc::CustomSource {
+class SampledSource : public openmc::Source {
   private:
     // the source that we will sample from
     plasma_source::PlasmaSource source;
@@ -19,7 +19,7 @@ class SampledSource : public openmc::CustomSource {
     // so that the source can be sampled from.
     // essentially wraps the sample_source method on the source and populates the
     // relevant values in the openmc::Particle::Bank.
-    openmc::Particle::Bank sample(uint64_t* seed) {
+    openmc::Particle::Bank sample(uint64_t* seed) const {
       openmc::Particle::Bank particle;
     
       // random numbers sampled from openmc::prn
