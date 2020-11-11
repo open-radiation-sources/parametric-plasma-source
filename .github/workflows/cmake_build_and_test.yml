@@ -23,7 +23,7 @@ jobs:
         mkdir build && cd build
         cmake ..
         make
-        make install
+        sudo make install
     - name: Build plasma source
       run: |
         mkdir build && cd build
@@ -52,6 +52,14 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX=.. ..
         make
         make install
+    - name: Install Catch2
+      run: |
+        git clone https://github.com/catchorg/Catch2
+        cd Catch2
+        mkdir build && cd build
+        cmake ..
+        make
+        sudo make install
     - name: Build plasma source
       run: |
         mkdir build && cd build
