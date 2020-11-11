@@ -38,7 +38,7 @@ jobs:
     - name: Check Source Generator
       run: |
         cd build
-        ./source_generator -l "source_sampling.so" -i "major_radius=9.06, minor_radius=2.92258, elongation=1.557, \
+        ./source_generator -l "$PWD/source_sampling.so" -i "major_radius=9.06, minor_radius=2.92258, elongation=1.557, \
           triangularity=0.27, shafranov_shift=0.44789, pedestal_radius=2.33806, ion_density_pedestal=1.09e+20, \
           ion_density_separatrix=3e+19, ion_density_origin=1.09e+20, ion_density_alpha=1, ion_temperature_pedestal=6.09, \
           ion_temperature_separatrix=0.1, ion_temperature_origin=45.9, ion_temperature_alpha=8.06, ion_temperature_beta=6, \
