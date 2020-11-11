@@ -78,6 +78,7 @@ jobs:
     - name: Install OpenMC
       run: |
         cd /opt
+        sudo apt install g++ cmake libhdf5-dev
         git clone https://github.com/openmc-dev/openmc.git
         cd openmc
         git checkout develop
