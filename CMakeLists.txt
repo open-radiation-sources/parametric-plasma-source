@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(parametric_plasma_source)
+# look in the cmake folder
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
@@ -45,21 +47,20 @@ list(APPEND source_sampling_SOURCES
 # So don't terminate the build
 find_package(OpenMC QUIET)
 
-if(OpenMC_FOUND)
+if(OPENMC_FOUND)
   # Build the source_sampling OpenMC plugin if OpenMC is available
-  set(OPENMC_INC_DIR ${OpenMC_DIR}/../../../include/openmc)
-  set(OPENMC_LIB_DIR ${OpenMC_DIR}/../../../lib)
+  set(OPENMC_INC_DIR ${OPENMC_DIR}/include)
+  set(OPENMC_LIB_DIR ${OPENMC_DIR}/lib)
 
+  message(STATUS ${OPENMC_INC_DIR})
   add_library(source_sampling SHARED ${source_sampling_SOURCES})
 
-  find_library(OPENMC_LIB openmc HINTS ${OPENMC_LIB_DIR} OPTIONAL)
+  find_library(OpenMC::libopenmc openmc HINTS ${OPENMC_LIB_DIR} OPTIONAL)
 
-  if (OPENMC_LIB)
-    set_target_properties(source_sampling PROPERTIES PREFIX "")
-    set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
-    target_link_libraries(source_sampling ${OPENMC_LIB} gfortran)
-  endif()
+  set_target_properties(source_sampling PROPERTIES PREFIX "")
+  set_target_properties(source_sampling PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  target_include_directories(source_sampling PUBLIC ${OPENMC_INC_DIR})
+  target_link_libraries(source_sampling OpenMC::libopenmc gfortran)
 else()
   message(WARNING "Unable to find OpenMC installation - the source_sampling plugin will not be built.")
 endif()
@@ -89,4 +90,4 @@ set_target_properties(source_generator PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(source_generator PUBLIC ${OPENMC_INC_DIR})
 target_include_directories(source_generator PUBLIC ${HDF5_INCLUDE_DIRS})
 target_include_directories(source_generator PUBLIC ${OPENMC_DIR}/vendor/pugixml)
-target_link_libraries(source_generator ${OPENMC_LIB} ${HDF5_LIBRARIES} stdc++fs)
+target_link_libraries(source_generator OpenMC::libopenmc pugixml ${HDF5_LIBRARIES} stdc++fs)
