@@ -60,7 +60,7 @@ void PlasmaSource::sample(std::array<double,8> random_numbers,
                           double &u,
                           double &v,
                           double &w,
-                          double &E) {
+                          double &E) const {
   double radius = 0.;
   int bin = 0;
   sample_radial(random_numbers[0],random_numbers[1],radius,bin);
@@ -77,7 +77,7 @@ void PlasmaSource::sample(std::array<double,8> random_numbers,
  * sample the pdf src_profile, to generate the sampled minor radius
  */
 void PlasmaSource::sample_radial(double rn_store1, double rn_store2, 
-                          double &sampled_radius, int &sampled_bin) {
+                          double &sampled_radius, int &sampled_bin) const {
   
   for ( int i = 0 ; i < numberOfBins ; i++ ) {
     if ( rn_store1 <= source_profile[i] ) {
@@ -103,7 +103,7 @@ void PlasmaSource::sample_radial(double rn_store1, double rn_store2,
  * sample the energy of the neutrons, updates energy neutron in mev
  */
 void PlasmaSource::sample_energy(const int bin_number, double random_number1, double random_number2,
-		                             double &energy_neutron) {
+		                             double &energy_neutron) const {
   // generate the normally distributed number
   const double twopi = 6.28318530718;
   double sample1 = std::sqrt(-2.0*std::log(random_number1));
@@ -120,7 +120,7 @@ void PlasmaSource::sample_energy(const int bin_number, double random_number1, do
  */
 void PlasmaSource::convert_rad_to_rz( const double minor_sampled,
 			                  const double rn_store, 
-                        double &radius, double &height)
+                        double &radius, double &height) const
 {
   const double twopi = 6.28318530718;
   
@@ -140,7 +140,7 @@ void PlasmaSource::convert_rad_to_rz( const double minor_sampled,
  * convert rz_to_xyz
  */
 void PlasmaSource::convert_r_to_xy(const double r, const double rn_store, 
-                     double &x, double &y) 
+                     double &x, double &y) const
                     
 {
   double toroidal_extent = maxToroidalAngle - minToroidalAngle;
@@ -270,7 +270,7 @@ double PlasmaSource::dt_xs(double ion_temp)
 void PlasmaSource::isotropic_direction(const double random1, 
                                          const double random2,
                                          double &u, double &v,
-                                         double &w) {
+                                         double &w) const {
   double t = 2*M_PI*random1;
   double p = acos(1. - 2.*random2);
 

@@ -59,6 +59,6 @@ void Sample_Plasma_Source(PLASMASOURCE* source,
     std::copy_n(std::begin(random_numbers_c),8,std::begin(random_numbers));
     
     
-    source->SampleSource(random_numbers,x,y,z,u,v,w,E);
+    source->sample(random_numbers,x,y,z,u,v,w,E);
     
 }

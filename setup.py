@@ -1,11 +1,16 @@
-import json
 import os
-import requests
+import pybind11
 import subprocess
 import sys
 
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+
+
+with open("parametric_plasma_source/__init__.py", "r") as f:
+    for line in f.readlines():
+        if "__version__" in line:
+            version = line.split()[-1].strip('"')
 
 
 class CMakeExtention(Extension):
@@ -18,7 +23,7 @@ class CMakeBuild(build_ext):
     def run(self):
         try:
             subprocess.check_output(["cmake", "--version"])
-        except OSError:
+        except FileNotFoundError:
             raise RuntimeError(
                 "CMake must be installed to build the "
                 "following extentions: "
@@ -36,7 +41,9 @@ class CMakeBuild(build_ext):
         cmake_args = [
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + extdir,
             "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=" + extdir,
+            "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=" + extdir,
             "-DPYTHON_EXECUTABLE=" + sys.executable,
+            "-DPYBIND11_PATH=" + pybind11.commands.DIR,
         ]
 
         cfg = "Debug" if self.debug else "Release"
@@ -53,77 +60,17 @@ class CMakeBuild(build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
         subprocess.check_call(
-            ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env
+            ["cmake", extdir] + cmake_args, cwd=self.build_temp, env=env
         )
         subprocess.check_call(
-            ["cmake", "--build", "."] + build_args, cwd=self.build_temp
+            [
+                "cmake",
+                "--build",
+                ".",
+            ]
+            + build_args,
+            cwd=self.build_temp,
         )
-
-
-def get_version(release_override="0.0.1"):
-    def get_last_version_root(last_version):
-        if ".post" in last_version or ".dev" in last_version:
-            last_version_root = ".".join(last_version.split(".")[:-1])
-        else:
-            last_version_root = last_version
-        return last_version_root
-
-    cwd = os.path.dirname(os.path.realpath(__file__))
-    git_version = subprocess.check_output(
-        ["git", "describe", "--always", "--tags"], stderr=None, cwd=cwd
-    ).strip().decode("utf-8")
-
-    if "." not in git_version:
-        # Git doesn't know about a tag yet, so set the version root to release_override
-        version_root = release_override
-    else:
-        version_root = git_version.split("-")[0]
-
-    if "." not in git_version or "-" in git_version:
-        # This commit doesn't correspond to a tag, so mark it as post or dev
-        response = requests.get(
-            "https://test.pypi.org/pypi/parametric-plasma-source/json"
-        )
-        if response.status_code == 200:
-            # Response from TestPyPI was successful - get latest version and increment
-            last_version = json.loads(response.content)["info"]["version"]
-            last_version_root = get_last_version_root(last_version)
-
-            if last_version_root == version_root:
-                # We're still on the same released version, so increment the 'post'
-                post_count = 1
-                if "post" in last_version:
-                    post_index = last_version.rfind("post") + 4
-                    post_count = int(last_version[post_index:])
-                    post_count += 1
-                version = version_root + ".post" + str(post_count)
-            else:
-                response = requests.get(
-                    "https://pypi.org/pypi/parametric-plasma-source/json"
-                )
-                dev_count = 1
-                if response.status_code == 200:
-                    # Response from PyPI was successful - get dev version and increment
-                    last_version = json.loads(response.content)["info"]["version"]
-                    last_version_root = get_last_version_root(last_version)
-
-                    if last_version_root == version_root:
-                        if "dev" in last_version:
-                            dev_index = last_version.rfind("dev") + 3
-                            dev_count = int(last_version[dev_index:])
-                            dev_count += 1
-                version = version_root + ".dev" + str(dev_count)
-        else:
-            # Bad response from TestPyPI, so use git commits (requires git history)
-            # NOTE: May cause version clashes on mutliple branches - use test.pypi
-            # to avoid this.
-            num_commits = subprocess.check_output(
-                ["git", "rev-list", "--count", "HEAD"], stderr=None, cwd=cwd
-            ).strip().decode("utf-8")
-            version = release_override + ".post" + num_commits
-    else:
-        version = version_root
-    return version
 
 
 with open("README.md", "r") as fh:
@@ -131,16 +78,25 @@ with open("README.md", "r") as fh:
 
 setup(
     name="parametric_plasma_source",
-    version=get_version("0.0.6"),
+    version=version,
     author="Andrew Davis",
     author_email="jonathan.shimwell@ukaea.uk",
     description="Parametric plasma source for fusion simulations in OpenMC",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/makeclean/parametric-plasma-source/",
-    packages=find_packages(),
+    packages=["parametric_plasma_source"],
     ext_modules=[CMakeExtention("parametric_plasma_source/plasma_source")],
-    package_data={"parametric_plasma_source": ["source_sampling.so"]},
+    package_data={
+        "parametric_plasma_source": [
+            "src/plasma_source.cpp",
+            "src/plasma_source.hpp",
+            "src/plasma_source_pybind.cpp",
+            "src/source_sampling.cpp",
+            "src/source_generator.cpp",
+            "CMakeLists.txt",
+        ]
+    },
     cmdclass=dict(build_ext=CMakeBuild),
     classifiers=[
         "Programming Language :: Python :: 3",
