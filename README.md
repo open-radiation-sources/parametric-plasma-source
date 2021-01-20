@@ -49,13 +49,13 @@ git clone https://github.com/open-radiation-sources/parametric-plasma-source.git
 ```
 
 Then create a build folder and compile from the folder. This assumes that
-openmc repository was cloned into your home directory ```~/openmc```.
+openmc repository was cloned into your home directory ```/opt/openmc```.
 
 ```bash
 cd parametric-plasma-source
 mkdir build
 cd build
-cmake .. -DOPENMC_DIR=~/openmc
+cmake .. -DOPENMC_DIR=/opt/openmc
 make
 ```
 
