@@ -13,44 +13,22 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_x86_64
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
       with:
-        fetch-depth: 0  # Get the repo history so we can version by number of commits
-    - name: Install OpenMC
-      run: |
-        yum install -y gcc-c++ cmake3 hdf5-devel
-        alternatives --install /usr/local/bin/cmake cmake /usr/bin/cmake3 20 \
-        --slave /usr/local/bin/ctest ctest /usr/bin/ctest3 \
-        --slave /usr/local/bin/cpack cpack /usr/bin/cpack3 \
-        --slave /usr/local/bin/ccmake ccmake /usr/bin/ccmake3 \
-        --family cmake
-        git clone --recurse-submodules https://github.com/openmc-dev/openmc.git
-        cd openmc
-        git checkout
-        mkdir build && cd build
-        cmake ..
-        make
-        make install
+        python-version: 3.8
     - name: Build plasma source
       run: |
-        export PYVER=${{ matrix.python-version }}
-        alias python=$(ls -d /opt/python/* | grep ${PYVER//.})/bin/python
-        python -m pip install -r requirements-develop.txt
-        python -m pip install auditwheel
-        python setup.py bdist_wheel
-        python -m auditwheel show dist/*.whl
-        python -m auditwheel repair dist/*.whl
+        pip install -r requirements-develop.txt
+        python -m build --sdist .
     - name: Upload wheel artifact
       uses: actions/upload-artifact@v2
       with:
         name: dist
-        path: wheelhouse
+        path: dist
 
   test:
     runs-on: ubuntu-latest
@@ -72,7 +50,47 @@ jobs:
         path: dist
     - name: Install plasma source
       run: |
-        python -m pip install --no-index --find-links=file:dist parametric-plasma-source
+        python -m pip install dist/parametric_plasma_source-*.tar.gz
+    - name: Run tests
+      run: |
+        python -m pip install -r requirements-develop.txt
+        cd tests
+        python -m pytest
+
+  test_openmc:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Download build
+      uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+    - name: Install OpenMC
+      run: |
+        cd /opt
+        sudo apt install g++ cmake libhdf5-dev
+        git clone https://github.com/openmc-dev/openmc.git
+        cd openmc
+        git checkout develop
+        mkdir build && cd build
+        cmake -DCMAKE_INSTALL_PREFIX=.. ..
+        make
+        make install
+        cd ..
+        python -m pip install .
+    - name: Install plasma source
+      run: |
+        python -m pip install dist/parametric_plasma_source-*.tar.gz
     - name: Run tests
       run: |
         python -m pip install -r requirements-develop.txt
@@ -80,8 +98,9 @@ jobs:
         python -m pytest
 
   publish:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags')}}
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, test_openmc]
 
     steps:
     - name: Download build
@@ -90,6 +109,7 @@ jobs:
         name: dist
         path: dist
     - name: Publish wheel artifact to TestPyPI
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}

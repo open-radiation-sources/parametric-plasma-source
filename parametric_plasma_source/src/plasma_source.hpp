@@ -45,7 +45,7 @@ class PlasmaSource {
                 double &u,
                 double &v,
                 double &w,
-                double &E);
+                double &E) const;
 
     /*
      * Function to setup the plasma source in the first case.
@@ -77,13 +77,13 @@ class PlasmaSource {
     void sample_radial(double rn_store1,
                        double rn_store2,
                        double &sampled_radius,
-                       int &sampled_bin);
+                       int &sampled_bin) const;
 
     /*
      * sample the neutron energy  in MeV
      */
     void sample_energy(const int bin_number, double random_number1, double random_number2,
-		                   double &energy_neutron);
+		                   double &energy_neutron) const;
 
     /*
      * take the sampled minor radius and convert to cylindrical coordinates
@@ -91,12 +91,12 @@ class PlasmaSource {
     void convert_rad_to_rz(const double minor_sampled,
                            const double rn_store, 
                            double &radius,
-                           double &height);
+                           double &height) const;
 
     /*
      * convert partial cylindrical coords to xyz
      */
-    void convert_r_to_xy(const double r, const double rn_store, double &x, double &y);
+    void convert_r_to_xy(const double r, const double rn_store, double &x, double &y) const;
 
     /*
      * get an isotropically direction vector
@@ -105,7 +105,7 @@ class PlasmaSource {
                              const double random2,
 		                         double &u,
                              double &v,
-                             double &w);
+                             double &w) const;
 
     /*
      * get a key-value pair string representation of this instance of the source

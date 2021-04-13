@@ -1,8 +1,6 @@
 #include <iostream>
 #include <experimental/filesystem>
 
-#include "pugixml.hpp"
-
 #include "openmc/bank.h"
 #include "openmc/constants.h"
 #include "openmc/message_passing.h"
@@ -12,14 +10,14 @@
 
 namespace source_generator
 {
-  void print_settings(pugi::xml_node &root)
+  void print_settings(std::string path_source_library, std::string source_parameters)
   {
     using namespace openmc;
 
     std::cout << "Settings:" << std::endl;
     std::cout << " Number of particles: " << settings::n_particles << std::endl;
-    std::cout << " Source library: " << root.child("source").attribute("library").value() << std::endl;
-    std::cout << " Source parameters: " << root.child("source").attribute("parameters").value() << std::endl;
+    std::cout << " Source library: " << path_source_library << std::endl;
+    std::cout << " Source parameters: " << source_parameters << std::endl;
     std::cout << " Output path: " << settings::path_output << std::endl;
     std::cout << " Verbosity: " << settings::verbosity << std::endl;
     std::cout << std::endl;
@@ -55,11 +53,9 @@ namespace source_generator
     settings::verbosity = 5;
   }
 
-  int parse_command_line(int argc, char* argv[], pugi::xml_node &root)
+  int parse_command_line(int argc, char* argv[], std::string &path_source_library, std::string &source_parameters)
   {
     using namespace openmc;
-
-    root.append_child("source");
 
     for (int i=1; i < argc; ++i)
     {
@@ -74,13 +70,12 @@ namespace source_generator
         else if (arg == "-l" || arg == "--library")
         {
           i += 1;
-          root.child("source").append_attribute("library").set_value(argv[i]);
-          settings::path_source_library = argv[i];
+          path_source_library = argv[i];
         }
         else if (arg == "-i" || arg == "--input")
         {
           i += 1;
-          root.child("source").append_attribute("parameters").set_value(argv[i]);
+          source_parameters = argv[i];
         }
         else if (arg == "-o" || arg == "--output")
         {
@@ -102,13 +97,13 @@ namespace source_generator
 
     bool missing_arg = false;
 
-    if (!root.child("source").attribute("library"))
+    if (path_source_library.empty())
     {
       std::cout << "The --library or -l argument is mandatory and must be set." << std::endl;
       missing_arg = true;
     }
 
-    if (!root.child("source").attribute("parameters"))
+    if (source_parameters.empty())
     {
       std::cout << "The --input or -i argument is mandatory and must be set." << std::endl;
       missing_arg = true;
@@ -128,12 +123,12 @@ namespace source_generator
 
 int main(int argc, char* argv[])
 {
-  pugi::xml_document doc;
-  pugi::xml_node root = doc.append_child("settings");
+  std::string path_source_library;
+  std::string source_parameters;
 
   source_generator::set_defaults();
 
-  int run = source_generator::parse_command_line(argc, argv, root);
+  int run = source_generator::parse_command_line(argc, argv, path_source_library, source_parameters);
 
   if (run < 0)
   {
@@ -142,14 +137,15 @@ int main(int argc, char* argv[])
 
   if (openmc::settings::verbosity >= 5)
   {
-    source_generator::print_settings(root);
+    source_generator::print_settings(path_source_library, source_parameters);
   }
 
   std::cout << "Sampling source:" << std::endl;
-  openmc::SourceDistribution source = openmc::SourceDistribution(root.child("source"));
+  openmc::model::external_sources.push_back(std::make_unique<openmc::CustomSourceWrapper>(path_source_library, source_parameters));
   openmc::calculate_work();
   openmc::allocate_banks();
   openmc::initialize_source();
+  std::cout << "Source sampling completed." << std::endl;
 
   return 0;
 }
