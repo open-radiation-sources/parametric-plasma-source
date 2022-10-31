@@ -18,9 +18,9 @@ class SampledSource : public openmc::Source {
     // the function that will be exposed in the openmc::CustomSource parent class
     // so that the source can be sampled from.
     // essentially wraps the sample_source method on the source and populates the
-    // relevant values in the openmc::Particle::Bank.
-    openmc::Particle::Bank sample(uint64_t* seed) const {
-      openmc::Particle::Bank particle;
+    // relevant values in the openmc::SourceSite.
+    openmc::SourceSite sample(uint64_t* seed) const {
+      openmc::SourceSite particle;
     
       // random numbers sampled from openmc::prn
       std::array<double,8> randoms = {openmc::prn(seed),
@@ -38,7 +38,7 @@ class SampledSource : public openmc::Source {
       this->source.sample(randoms, particle.r.x, particle.r.y, particle.r.z, u, v, w, E);
 
       // wgt
-      particle.particle = openmc::Particle::Type::neutron;
+      particle.particle = openmc::ParticleType::neutron;
       particle.wgt = 1.0;
       particle.delayed_group = 0;
 
