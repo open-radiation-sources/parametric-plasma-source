@@ -3,5 +3,5 @@ build==0.1.0
 cmake==3.18.2
 flake8==3.8.3
 pybind11==2.6.0
-pytest==6.0.1
+pytest==6.2.5
 wheel==0.34.2
